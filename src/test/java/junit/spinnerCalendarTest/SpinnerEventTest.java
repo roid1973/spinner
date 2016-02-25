@@ -131,11 +131,11 @@ public class SpinnerEventTest {
 		System.out.println("generating events");
 		// TODO - add instructor to DB
 
-		se1 = new SpinnerEvent(sc1.getId(), se1_name, from1, to1, (10 * 60), current, se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
-		se2 = new SpinnerEvent(sc1.getId(), se2_name, from2, to2, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se3 = new SpinnerEvent(sc1.getId(), se3_name, from3, to3, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se4 = new SpinnerEvent(sc1.getId(), se4_name, from4, to4, (10 * 60), current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se5 = new SpinnerEvent(sc1.getId(), se5_name, from5, to5, 0, openDate5, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se1 = new SpinnerEvent(sc1.getId(), from1.getTime(), se1_name, from1, to1, (10 * 60), current, se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		se2 = new SpinnerEvent(sc1.getId(), 0, se2_name, from2, to2, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se3 = new SpinnerEvent(sc1.getId(), 0, se3_name, from3, to3, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se4 = new SpinnerEvent(sc1.getId(), 0, se4_name, from4, to4, (10 * 60), current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se5 = new SpinnerEvent(sc1.getId(), 0, se5_name, from5, to5, 0, openDate5, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
 
 		System.out.println(spinnerEventDateFormat.format(se4.getFromDate()));
 		System.out.println(spinnerEventDateFormat.format(se4.getToDate()));
@@ -213,10 +213,10 @@ public class SpinnerEventTest {
 	public void updateEventDetails() throws Exception {
 		System.out.println("updateEventDetails");
 		String eventNewName = "EVENT NEW_NAME";
-		SpinnerEvent se1_new = new SpinnerEvent(sc1.getId(), eventNewName, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		SpinnerEvent se1_new = new SpinnerEvent(sc1.getId(), 0, eventNewName, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
 		se1 = classes.updateSpinnerEventInSpinnerCalendar(sc1.getId(), se1.getEventId(), se1_new);
 		assertTrue(se1.getName().equals(eventNewName));
-		SpinnerEvent se2_new = new SpinnerEvent(sc1.getId(), se1_name, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		SpinnerEvent se2_new = new SpinnerEvent(sc1.getId(), 0, se1_name, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
 		se1 = classes.updateSpinnerEventInSpinnerCalendar(sc1.getId(), se1.getEventId(), se2_new);
 	}
 
@@ -267,20 +267,20 @@ public class SpinnerEventTest {
 		classes.getStudentRegistrationEvents(sc1.getId(), p1.getId(), registered, standBy);
 		assertFalse(registered.contains(se4.getEventId()));
 
-//		System.out.println("unRegisterFromHistoryEvent eventLockTime = " + se4.getLockDate());
-//		Date current = new Date();
-//		System.out.println("unRegisterFromHistoryEvent current = " + current);
-//		if(current.after(se4.getLockDate())){
-//			System.out.println("unRegisterFromHistoryEvent current after lockTime");
-//		} else{
-//			System.out.println("unRegisterFromHistoryEvent current before lockTime");
-//		}
+		// System.out.println("unRegisterFromHistoryEvent eventLockTime = " + se4.getLockDate());
+		// Date current = new Date();
+		// System.out.println("unRegisterFromHistoryEvent current = " + current);
+		// if(current.after(se4.getLockDate())){
+		// System.out.println("unRegisterFromHistoryEvent current after lockTime");
+		// } else{
+		// System.out.println("unRegisterFromHistoryEvent current before lockTime");
+		// }
 		studentEvent = classes.registerToSpinnerEvent(sc1.getId(), se4.getEventId(), p1.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.REGISTERED));
 		assertEquals(19, studentEvent.getCredit());
 		classes.getStudentRegistrationEvents(sc1.getId(), p1.getId(), registered, standBy);
 		assertTrue(registered.contains(se4.getEventId()));
-		
+
 		studentEvent = classes.unRegisterFromSpinnerEvent(sc1.getId(), se4.getEventId(), p1.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.NOT_REGISTERED));
 		assertEquals(19, studentEvent.getCredit());

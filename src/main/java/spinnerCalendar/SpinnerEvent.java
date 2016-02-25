@@ -21,11 +21,13 @@ public class SpinnerEvent {
 	private String address = null;
 	private String comments = null;
 	private String status = null;
+	private long recurringId = 0;
 
-	public SpinnerEvent(int classId, int eventId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
+	public SpinnerEvent(int classId, int eventId, long recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
 		validateInputs(seName, seFrom, seTo, seMaxCapacity);
 		this.classId = classId;
 		this.eventId = eventId;
+		this.recurringId = recurringId;
 		eventName = seName;
 		fromDate = seFrom;
 		toDate = seTo;
@@ -43,9 +45,10 @@ public class SpinnerEvent {
 		calculateStatus();
 	}
 
-	public SpinnerEvent(int classId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
+	public SpinnerEvent(int classId, long recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
 		validateInputs(seName, seFrom, seTo, seMaxCapacity);
 		this.classId = classId;
+		this.recurringId = recurringId;
 		eventName = seName;
 		fromDate = seFrom;
 		toDate = seTo;
@@ -74,7 +77,6 @@ public class SpinnerEvent {
 		address = newEvent.getAddress();
 		comments = newEvent.getComments();
 		status = newEvent.getStatus();
-		// calculateStatus();
 		DBspinner.updateSpinnerEvent(this);
 	}
 
@@ -96,6 +98,10 @@ public class SpinnerEvent {
 
 	public void setEventId(int id) {
 		eventId = id;
+	}
+
+	public long getRecurringId() {
+		return recurringId;
 	}
 
 	public int getClassId() {

@@ -506,29 +506,28 @@ public class SpinnerCalendarServices {
 	public List<SpinnerEvent> addRecurringEvent(@PathParam("classId") int classId, SpinnerEventInputRequest inputEvent) throws Exception {
 		ArrayList<SpinnerEvent> events = new ArrayList<SpinnerEvent>();
 		Date fromDate = inputEvent.getFromDate();
+		long recurringId = fromDate.getTime();
 		Date toDate = inputEvent.getToDate();
 		Date openDate = inputEvent.getOpenDate();
 		int interval = inputEvent.getInterval();
-		System.out.println("interval: "+interval);
-		for (int i = 0; i < inputEvent.getNumberOfOccurrences(); i++) {			
-			SpinnerEvent se = new SpinnerEvent(classId, inputEvent.getEventName(), fromDate, toDate, inputEvent.getLockTime(), openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+		System.out.println("interval: " + interval);
+		for (int i = 0; i < inputEvent.getNumberOfOccurrences(); i++) {
+			SpinnerEvent se = new SpinnerEvent(classId, recurringId, inputEvent.getEventName(), fromDate, toDate, inputEvent.getLockTime(), openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 			se = SpinnerClasses.getSpinnerClassesInstance().addSpinnerEventToSpinnerCalendar(classId, se);
 			events.add(se);
-			fromDate=DateUtils.addDaysToDate(fromDate, interval);
-			toDate=DateUtils.addDaysToDate(toDate, interval);
-			openDate=DateUtils.addDaysToDate(openDate, interval);
+			fromDate = DateUtils.addDaysToDate(fromDate, interval);
+			toDate = DateUtils.addDaysToDate(toDate, interval);
+			openDate = DateUtils.addDaysToDate(openDate, interval);
 		}
 		return events;
 	}
-	
-	
 
 	@POST
 	@Path("/addEvent/{classId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public SpinnerEvent addEvent(@PathParam("classId") int classId, SpinnerEventInputRequest inputEvent) throws Exception {
-		SpinnerEvent se = new SpinnerEvent(classId, inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+		SpinnerEvent se = new SpinnerEvent(classId, 0, inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 		se = SpinnerClasses.getSpinnerClassesInstance().addSpinnerEventToSpinnerCalendar(classId, se);
 		return se;
 	}
@@ -538,7 +537,7 @@ public class SpinnerCalendarServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public SpinnerEvent updateEvent(@PathParam("classId") int classId, @PathParam("eventId") int eventId, SpinnerEventInputRequest inputEvent) throws Exception {
-		SpinnerEvent se = new SpinnerEvent(classId, inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+		SpinnerEvent se = new SpinnerEvent(classId, 0, inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 		se = SpinnerClasses.getSpinnerClassesInstance().updateSpinnerEventInSpinnerCalendar(classId, eventId, se);
 		return se;
 	}

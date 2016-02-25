@@ -74,7 +74,7 @@ public class DBspinner {
 
 			while (rs.next()) {
 				int eventId = rs.getInt("eventId");
-				// int classId = rs.getInt("classId");
+				long recurringId = rs.getLong("recurringId");
 				String eventName = rs.getString("eventName");
 				Date fromDate = rs.getTimestamp("fromDate");
 				Date toDate = rs.getTimestamp("toDate");
@@ -85,7 +85,7 @@ public class DBspinner {
 				String address = rs.getString("address");
 				String comments = rs.getString("comments");
 				String status = rs.getString("status");
-				SpinnerEvent se = new SpinnerEvent(classId, eventId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status);
+				SpinnerEvent se = new SpinnerEvent(classId, eventId, recurringId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status);
 				eventsList.put(se.getEventId(), se);
 			}
 		}
@@ -105,25 +105,26 @@ public class DBspinner {
 	}
 
 	private static PreparedStatement prepareSatementInsertEvent(SpinnerEvent se, Connection conn) throws Exception {
-		String query = " insert into " + TABLE_EVENTS + " (classId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status)" + " values (?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+		String query = " insert into " + TABLE_EVENTS + " (recurringId, classId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status)" + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
 		PreparedStatement preparedStmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		prepareStatementInsertEvent(se, preparedStmt);
 		return preparedStmt;
 	}
 
 	private static void prepareStatementInsertEvent(SpinnerEvent se, PreparedStatement preparedStmt) throws Exception {
-		preparedStmt.setInt(1, se.getClassId());
-		preparedStmt.setString(2, se.getName());
-		preparedStmt.setTimestamp(3, getSqlDate(se.getFromDate()));
-		preparedStmt.setTimestamp(4, getSqlDate(se.getToDate()));
+		preparedStmt.setLong(1,  se.getRecurringId());
+		preparedStmt.setInt(2, se.getClassId());
+		preparedStmt.setString(3, se.getName());
+		preparedStmt.setTimestamp(4, getSqlDate(se.getFromDate()));
+		preparedStmt.setTimestamp(5, getSqlDate(se.getToDate()));
 		int lockTime = (int) (se.getFromDate().getTime() - se.getLockDate().getTime()) / (1000 * 60);
-		preparedStmt.setInt(5, lockTime);
-		preparedStmt.setTimestamp(6, getSqlDate(se.getOpenDate()));
-		preparedStmt.setInt(7, se.getMaxCapacity());
-		preparedStmt.setInt(8, se.getInstructorId());
-		preparedStmt.setString(9, se.getAddress());
-		preparedStmt.setString(10, se.getComments());
-		preparedStmt.setString(11, se.getStatus());
+		preparedStmt.setInt(6, lockTime);
+		preparedStmt.setTimestamp(7, getSqlDate(se.getOpenDate()));
+		preparedStmt.setInt(8, se.getMaxCapacity());
+		preparedStmt.setInt(9, se.getInstructorId());
+		preparedStmt.setString(10, se.getAddress());
+		preparedStmt.setString(11, se.getComments());
+		preparedStmt.setString(12, se.getStatus());
 	}
 
 	private static void prepareStatementUpdateEvent(SpinnerEvent newEvent, PreparedStatement preparedStmt) throws Exception {
