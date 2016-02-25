@@ -1,12 +1,13 @@
 package spinner.notifications;
 
-import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.google.appengine.repackaged.com.google.common.base.Charsets;
 
 import spinnerCalendar.SpinnerEvent;
 import spinnerClass.SpinnerClass;
@@ -47,8 +48,8 @@ public class Notify {
 		// try {
 		// Prepare JSON containing the GCM message content. What to send and
 		// where to send.
-		JSONObject jGcmData = new JSONObject();
-		JSONObject jData = new JSONObject();
+		Map<String, Object> jData = new HashMap<String, Object>();
+		Map<String, Object> jGcmData = new HashMap<String, Object>();
 		// String msg = "Available Place in: " + se.getName();
 		jData.put("message", msg);
 		// Where to send GCM message.
@@ -67,13 +68,14 @@ public class Notify {
 		conn.setDoOutput(true);
 
 		// Send GCM message content.
-		OutputStream outputStream = conn.getOutputStream();
-		outputStream.write(jGcmData.toString().getBytes());
+		conn.getOutputStream().write(new ObjectMapper().writeValueAsString(jGcmData).getBytes(Charsets.UTF_8));
+
+		Map<String, Object> xxxData = new HashMap<String, Object>();
+		xxxData.put("msg", msg);
+		xxxData.put("topics", userTopic);
 
 		// Read GCM response.
-		InputStream inputStream = conn.getInputStream();
-		String resp = IOUtils.toString(inputStream);
-		System.out.println(resp + "{msg:" + msg + "}" + "{topics:" + userTopic + "}");
+		System.out.println(IOUtils.toString(conn.getInputStream()) + new ObjectMapper().writeValueAsString(xxxData));
 
 		// System.out.println("Check your device/emulator for notification or logcat for "
 		// + "confirmation of the receipt of the GCM message.");

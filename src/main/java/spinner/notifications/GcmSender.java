@@ -1,14 +1,22 @@
 package spinner.notifications;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
+/*import org.json.JSONArray;
+import org.json.JSONObject;*/
+
+
+
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.google.appengine.repackaged.com.google.common.base.Charsets;
 
 import utils.PropertiesUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class GcmSender {
@@ -33,8 +41,12 @@ public class GcmSender {
 		try {
 			// Prepare JSON containing the GCM message content. What to send and
 			// where to send.
-			JSONObject jGcmData = new JSONObject();
-			JSONObject jData = new JSONObject();
+			/*JSONObject jGcmData = new JSONObject();
+			JSONObject jData = new JSONObject();*/
+			
+			Map<String, Object> jData = new HashMap<String, Object>();
+			Map<String, Object> jGcmData = new HashMap<String, Object>();
+
 			jData.put("message", args[0].trim());
 			// Where to send GCM message.
 			if (args.length > 1 && args[1] != null) {
@@ -46,21 +58,16 @@ public class GcmSender {
 			jGcmData.put("data", jData);
 
 			// Create connection to send GCM Message request.
-			URL url = new URL("https://android.googleapis.com/gcm/send");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) new URL("https://android.googleapis.com/gcm/send").openConnection();
 			conn.setRequestProperty("Authorization", "key=" + API_KEY);
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setRequestMethod("POST");
 			conn.setDoOutput(true);
 
 			// Send GCM message content.
-			OutputStream outputStream = conn.getOutputStream();
-			outputStream.write(jGcmData.toString().getBytes());
-
+			conn.getOutputStream().write(new ObjectMapper().writeValueAsString(jGcmData).getBytes(Charsets.UTF_8));
 			// Read GCM response.
-			InputStream inputStream = conn.getInputStream();
-			String resp = IOUtils.toString(inputStream);
-			System.out.println(resp);
+			System.out.println(IOUtils.toString(conn.getInputStream()));
 
 			System.out.println("Check your device/emulator for notification or logcat for " + "confirmation of the receipt of the GCM message.");
 		} catch (IOException e) {
