@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="target/spinner-1.0/WEB-INF/classes" path="src/main/java">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -17,21 +28,5 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Apache/maven/repo/mysql-connector-java-5.0.8/mysql-connector-java-5.0.8-bin.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/maven/repo/com/google/appengine/appengine-api-1.0-sdk/1.9.0/appengine-api-1.0-sdk-1.9.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/roid/.m2/repository/org/json/json/20080701/json-20080701.jar"/>
-	<classpathentry kind="lib" path="C:/Users/roid/.m2/repository/commons-io/commons-io/2.0.1/commons-io-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/roid/.m2/repository/commons-dbcp2/2.1.1/commons-dbcp2-2.1.1.jar"/>
-	<classpathentry excluding="**" kind="src" output="target/spinner-1.0/WEB-INF/classes" path="src/main/resources">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="output" path="target/spinner-1.0/WEB-INF/classes"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

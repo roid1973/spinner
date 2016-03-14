@@ -1,6 +1,8 @@
 package spinnerCalendar;
 
 import java.util.*;
+
+import spinnerClass.SpinnerClasses;
 import charcters.PersonSpinnerClass;
 import charcters.Persons;
 import db.spinner.DBspinner;
@@ -21,9 +23,9 @@ public class SpinnerEvent {
 	private String address = null;
 	private String comments = null;
 	private String status = null;
-	private long recurringId = 0;
+	private String recurringId = null;
 
-	public SpinnerEvent(int classId, int eventId, long recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
+	public SpinnerEvent(int classId, int eventId, String recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
 		validateInputs(seName, seFrom, seTo, seMaxCapacity);
 		this.classId = classId;
 		this.eventId = eventId;
@@ -32,7 +34,11 @@ public class SpinnerEvent {
 		fromDate = seFrom;
 		toDate = seTo;
 		lockDate = new Date(fromDate.getTime() - (lockTime * 60 * 1000));
-		openDate = seOpenDate;
+		if (seOpenDate != null) {
+			openDate = seOpenDate;
+		} else {
+			openDate = new Date();
+		}
 		maxCapacity = seMaxCapacity;
 		setIsEventFull();
 		if (seInstructorId == 0) {
@@ -45,7 +51,7 @@ public class SpinnerEvent {
 		calculateStatus();
 	}
 
-	public SpinnerEvent(int classId, long recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
+	public SpinnerEvent(int classId, String recurringId, String seName, Date seFrom, Date seTo, int lockTime, Date seOpenDate, int seMaxCapacity, int seInstructorId, String address, String comments, String sts) throws Exception {
 		validateInputs(seName, seFrom, seTo, seMaxCapacity);
 		this.classId = classId;
 		this.recurringId = recurringId;
@@ -53,7 +59,11 @@ public class SpinnerEvent {
 		fromDate = seFrom;
 		toDate = seTo;
 		lockDate = new Date(fromDate.getTime() - (lockTime * 60 * 1000));
-		openDate = seOpenDate;
+		if (seOpenDate != null) {
+			openDate = seOpenDate;
+		} else {
+			openDate = new Date();
+		}
 		maxCapacity = seMaxCapacity;
 		setIsEventFull();
 		if (seInstructorId == 0) {
@@ -100,7 +110,7 @@ public class SpinnerEvent {
 		eventId = id;
 	}
 
-	public long getRecurringId() {
+	public String getRecurringId() {
 		return recurringId;
 	}
 
@@ -198,10 +208,10 @@ public class SpinnerEvent {
 		initRegistration();
 		String sts = Status.FAILURE;
 		if (getStatus().equals(Status.EVENT_OPEN) || getStatus().equals(Status.EVENT_LOCKED_FOR_UNREGISTRATION)) {
-			if (registered.contains(s.getPerson().getId())) {
-				sts = Status.REGISTERED;
-			} else {
-				synchronized (this) {
+			synchronized (this) {
+				if (registered.contains(s.getPerson().getId())) {
+					sts = Status.REGISTERED;
+				} else {
 					if (isEventFull) {
 						sts = registerToStandByList(s);
 					} else {
@@ -217,11 +227,15 @@ public class SpinnerEvent {
 		initRegistration();
 		String sts = Status.FAILURE;
 		if (getStatus().equals(Status.EVENT_OPEN) || getStatus().equals(Status.EVENT_LOCKED_FOR_UNREGISTRATION)) {
-			boolean notifyStanby = unregister(s);
-			sts = Status.NOT_REGISTERED;
+			boolean notifyStanby = false;
+			synchronized (this) {
+				notifyStanby = unregister(s);
+				sts = Status.NOT_REGISTERED;
+			}
 			if (notifyStanby) {
 				notifyStanby();
 			}
+
 		}
 		return sts;
 	}
@@ -322,7 +336,6 @@ public class SpinnerEvent {
 		if (!standby.isEmpty()) {
 			spinner.notifications.Notify.notifyEventAvailablePlaces(this);
 		}
-
 	}
 
 }

@@ -74,7 +74,7 @@ public class DBspinner {
 
 			while (rs.next()) {
 				int eventId = rs.getInt("eventId");
-				long recurringId = rs.getLong("recurringId");
+				String recurringId = rs.getString("recurringId");
 				String eventName = rs.getString("eventName");
 				Date fromDate = rs.getTimestamp("fromDate");
 				Date toDate = rs.getTimestamp("toDate");
@@ -112,7 +112,7 @@ public class DBspinner {
 	}
 
 	private static void prepareStatementInsertEvent(SpinnerEvent se, PreparedStatement preparedStmt) throws Exception {
-		preparedStmt.setLong(1,  se.getRecurringId());
+		preparedStmt.setString(1, se.getRecurringId());
 		preparedStmt.setInt(2, se.getClassId());
 		preparedStmt.setString(3, se.getName());
 		preparedStmt.setTimestamp(4, getSqlDate(se.getFromDate()));
@@ -601,6 +601,26 @@ public class DBspinner {
 	private static void deleteStudentRegisterationFromClassEvents(int classId, int personId, PreparedStatement preparedStmt) throws SQLException {
 		preparedStmt.setInt(1, classId);
 		preparedStmt.setInt(2, personId);
+	}
+
+	public static void deleteStudentRegisterationFromClassEvent(int classId, int personId, int eventId) throws Exception {
+		Connection conn = DButils.getDBconnection();
+		PreparedStatement preparedStmt = deleteStudentRegisterationFromClassEvent(classId, personId, eventId, conn);
+		preparedStmt.execute();
+		conn.close();
+	}
+
+	private static PreparedStatement deleteStudentRegisterationFromClassEvent(int classId, int personId, int eventId, Connection conn) throws SQLException {
+		String query = " delete from " + TABLE_REGISTRATION + " where classId=? and personId=? and eventId=?";
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+		deleteStudentRegisterationFromClassEvent(classId, personId, eventId, preparedStmt);
+		return preparedStmt;
+	}
+
+	private static void deleteStudentRegisterationFromClassEvent(int classId, int personId, int eventId, PreparedStatement preparedStmt) throws SQLException {
+		preparedStmt.setInt(1, classId);
+		preparedStmt.setInt(2, personId);
+		preparedStmt.setInt(3, eventId);
 	}
 
 	public static void initEventRegistrations(int eventId, List<Integer> registered, List<Integer> standBy) throws Exception {

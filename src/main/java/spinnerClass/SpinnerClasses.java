@@ -77,6 +77,7 @@ public class SpinnerClasses {
 
 	public void deleteSpinnerEventFromSpinnerCalendar(int classId, int eventId) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
+		unRegisterAllFromSpinnerEvent(classId, eventId);
 		sc.deleteSpinnerEventFromClassCalendar(eventId);
 	}
 
@@ -93,8 +94,8 @@ public class SpinnerClasses {
 		s.addCredit(credit);
 		return s;
 	}
-	
-	public PersonSpinnerClass updateCredit(int studentId, int classId, int credit) throws Exception{
+
+	public PersonSpinnerClass updateCredit(int studentId, int classId, int credit) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
 		PersonSpinnerClass s = sc.getStudent(studentId);
 		s.updateCredit(credit);
@@ -106,7 +107,7 @@ public class SpinnerClasses {
 		Person p = Persons.getPersonsInstance().getPerson(personId);
 		sc.assignInstructorToClass(p);
 	}
-	
+
 	public void assignAdminToClass(int personId, int classId) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
 		Person p = Persons.getPersonsInstance().getPerson(personId);
@@ -129,7 +130,7 @@ public class SpinnerClasses {
 		Person p = Persons.getPersonsInstance().getPerson(personId);
 		sc.unAssignInstructorFromClass(p);
 	}
-	
+
 	public void unAssignAdminFromClass(int personId, int classId) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
 		Person p = Persons.getPersonsInstance().getPerson(personId);
@@ -153,7 +154,32 @@ public class SpinnerClasses {
 
 	public StudentSpinnerEvent unRegisterFromSpinnerEvent(int classId, int eventId, int studentId) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
+
 		return sc.unRegisterFromSpinnerEvent(eventId, studentId);
+	}
+
+	private void unRegisterAllFromSpinnerEvent(int classId, int eventId) throws Exception {
+		boolean updateCredit = false;
+		if (!getSpinnerClass(classId).getClassEvent(eventId).getStatus().equals(Status.EVENT_OPEN)) {
+			updateCredit = true;
+		}
+		List<Person> registered = getEventRegisteredStudents(classId, eventId);
+		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, registered, updateCredit);
+		List<Person> standBy = getEventStandbyStudents(classId, eventId);
+		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, standBy, false);
+	}
+
+	private void unregisterListOfStudentsFromSpinnerEvent(int classId, int eventId, List<Person> students, boolean updateCredit) throws Exception {
+		Iterator<Person> it = students.iterator();
+		while (it.hasNext()) {
+			int personId = it.next().getId();
+			PersonSpinnerClass psc = getSpinnerClass(classId).getStudent(personId);
+			unRegisterFromSpinnerEvent(classId, eventId, personId);
+			psc.deleteStudentRegisterationFromClassEvent(eventId);
+			if (updateCredit) {
+				psc.addCredit(1);
+			}
+		}
 	}
 
 	public void getStudentRegistrationEvents(int classId, int studentId, List<Integer> registered, List<Integer> standBy) throws Exception {
@@ -262,9 +288,5 @@ public class SpinnerClasses {
 		}
 		return persons;
 	}
-
-
-
-
 
 }

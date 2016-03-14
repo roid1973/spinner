@@ -1,6 +1,5 @@
 package charcters;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -41,28 +40,32 @@ public class PersonSpinnerClass {
 		DBspinner.deleteStudentRegisterationFromClassEvents(classId, personId);
 	}
 
+	public void deleteStudentRegisterationFromClassEvent(int eventId) throws Exception {
+		DBspinner.deleteStudentRegisterationFromClassEvent(classId, personId, eventId);
+	}
+
 	public void initPersonRegisteration(List<Integer> registered, List<Integer> standBy) throws Exception {
 		registered.clear();
 		standBy.clear();
 		DBspinner.initPersonRegistrations(personId, registered, standBy);
 	}
 
-	public void registerCredit(SpinnerEvent event) throws Exception {		
+	public void registerCredit(SpinnerEvent event) throws Exception {
 		if (event.getStatus().equals(Status.EVENT_OPEN)) {
 			numberOfValidRegistrations = numberOfValidRegistrations - 1;
-		} else if(event.getStatus().equals(Status.EVENT_LOCKED_FOR_UNREGISTRATION)) {
+		} else if (event.getStatus().equals(Status.EVENT_LOCKED_FOR_UNREGISTRATION)) {
 			boolean noNeedToUpdateCredit = checkIfUnRegisteredAfterLockTime(event);
-			if(!noNeedToUpdateCredit){
+			if (!noNeedToUpdateCredit) {
 				numberOfValidRegistrations = numberOfValidRegistrations - 1;
 			}
-		}		
+		}
 		DBspinner.updatePersonNumberOfValidRegistrations(classId, personId, numberOfValidRegistrations);
 	}
 
 	private boolean checkIfUnRegisteredAfterLockTime(SpinnerEvent event) throws Exception {
 		boolean unRegisterAfterLockTime = false;
 		Date unregisterTime = DBspinner.getUnRegisterTime(personId, event.getEventId());
-		if(unregisterTime!=null && unregisterTime.after(event.getLockDate())){
+		if (unregisterTime != null && unregisterTime.after(event.getLockDate())) {
 			unRegisterAfterLockTime = true;
 		}
 		return unRegisterAfterLockTime;

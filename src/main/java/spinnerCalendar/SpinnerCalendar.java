@@ -40,14 +40,9 @@ public class SpinnerCalendar {
 		return se;
 	}
 
-	public SpinnerEvent updateSpinnerEventToSpinnerCalendar(int eventId, SpinnerEvent newEvent) throws Exception {
-		SpinnerEvent se = null;
-		if (eventsHashMap.containsKey(eventId)) {
-			se = eventsHashMap.get(eventId);
-			se.updateEventDetails(newEvent);
-		} else {
-			throw new Exception("updateSpinnerEventToSpinnerCalendar Failed: " + eventId + " not found in Spinner Calendar Event List");
-		}
+	public SpinnerEvent updateSpinnerEventDetails(int eventId, SpinnerEvent newEvent) throws Exception {
+		SpinnerEvent se = getSpinnerEvent(eventId);
+		se.updateEventDetails(newEvent);
 		return se;
 	}
 
@@ -57,21 +52,16 @@ public class SpinnerCalendar {
 	}
 
 	public void deleteSpinnerEventFromSpinnerCalendar(int eventId) throws Exception {
-		if (eventsHashMap.containsKey(eventId)) {
-			DBspinner.deleteSpinnerEventFromDB(eventId);
-			eventsHashMap.remove(eventId);
-		} else {
-			throw new Exception("deleteSpinnerEventFromSpinnerCalendar Failed: " + eventId + " not found in Spinner Calendar Event List");
-		}
+		DBspinner.deleteSpinnerEventFromDB(eventId);
+		eventsHashMap.remove(eventId);
 	}
 
 	public SpinnerEvent getSpinnerEvent(int eventId) throws Exception {
 		SpinnerEvent se = eventsHashMap.get(eventId);
 		if (se == null) {
-			throw new Exception("getSpinnerEvent Failed: " + eventId + " not found in Spinner Calendar Event List");
+			throw new Exception(eventId + " not found in Spinner Calendar Event List");
 		}
 		return se;
 	}
-
 
 }

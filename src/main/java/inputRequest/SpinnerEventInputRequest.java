@@ -20,7 +20,7 @@ public class SpinnerEventInputRequest {
 	private String comments;
 	private String status;
 	private int interval;
-	private int numberOfOccurrences;
+	private int numberOfOccurrences = 0;
 
 	public int getClassId() {
 		return classId;
@@ -40,6 +40,7 @@ public class SpinnerEventInputRequest {
 
 	public Date getFromDate() throws ParseException {
 		return DateUtils.stringToSpinnerEventDate(fromDate, timeZone);
+		// return DateUtils.stringToEventDateTime(fromDate);
 	}
 
 	public void setFromDate(String fromDate) {
@@ -48,6 +49,7 @@ public class SpinnerEventInputRequest {
 
 	public Date getToDate() throws ParseException {
 		return DateUtils.stringToSpinnerEventDate(toDate, timeZone);
+		// return DateUtils.stringToEventDateTime(toDate);
 	}
 
 	public void setToDate(String toDate) {
@@ -87,9 +89,10 @@ public class SpinnerEventInputRequest {
 	}
 
 	public Date getOpenDate() throws ParseException {
-		Date openD = new Date();
-		if(openDate!=null){
+		Date openD = null;
+		if (openDate != null && openDate.compareTo("") != 0) {
 			openD = DateUtils.stringToSpinnerEventDate(openDate, timeZone);
+			// return DateUtils.stringToEventDateTime(openDate);
 		}
 		return openD;
 	}
@@ -122,19 +125,20 @@ public class SpinnerEventInputRequest {
 		this.status = status;
 	}
 
-	public int getInterval() {		
+	public int getInterval() {
 		return interval;
 	}
-	
-	public int setInterval(String intervalString) {	
+
+	public int setInterval(String intervalString) {
 		interval = SpinnerConstants.getIntervalInt(intervalString);
 		return interval;
 	}
 
-	public int getNumberOfOccurrences() {		
+	public int getNumberOfOccurrences() {
 		return numberOfOccurrences;
 	}
-	public void setNumberOfOccurrences(int numberOfOccurrences) {		
+
+	public void setNumberOfOccurrences(int numberOfOccurrences) {
 		this.numberOfOccurrences = numberOfOccurrences;
 	}
 

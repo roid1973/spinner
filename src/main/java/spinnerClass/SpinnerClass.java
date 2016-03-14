@@ -187,11 +187,11 @@ public class SpinnerClass {
 
 	protected SpinnerEvent updateSpinnerEventToClassCalendar(int eventId, SpinnerEvent newEvent) throws Exception {
 		initClassCalendar();
-		return classCalendar.updateSpinnerEventToSpinnerCalendar(eventId, newEvent);
+		return classCalendar.updateSpinnerEventDetails(eventId, newEvent);
 	}
 
 	protected void deleteSpinnerEventFromClassCalendar(int eventId) throws Exception {
-		initClassCalendar();
+		initClassCalendar();		
 		classCalendar.deleteSpinnerEventFromSpinnerCalendar(eventId);
 	}
 
