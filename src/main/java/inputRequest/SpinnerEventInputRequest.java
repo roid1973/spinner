@@ -1,6 +1,7 @@
 package inputRequest;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import utils.DateUtils;
@@ -10,7 +11,7 @@ public class SpinnerEventInputRequest {
 	private int classId;
 	private String eventName;
 	private String fromDate; // dd.MM.yyyy HH:mm:ss
-	private String toDate; // dd.MM.yyyy HH:mm:ss
+	private String toDateString; // dd.MM.yyyy HH:mm:ss
 	private String timeZone;
 	private int lockTime;
 	private String openDate;
@@ -21,6 +22,7 @@ public class SpinnerEventInputRequest {
 	private String status;
 	private int interval;
 	private int numberOfOccurrences = 0;
+	private String duration;
 
 	public int getClassId() {
 		return classId;
@@ -40,20 +42,24 @@ public class SpinnerEventInputRequest {
 
 	public Date getFromDate() throws ParseException {
 		return DateUtils.stringToSpinnerEventDate(fromDate, timeZone);
-		// return DateUtils.stringToEventDateTime(fromDate);
 	}
 
 	public void setFromDate(String fromDate) {
 		this.fromDate = fromDate;
 	}
 
-	public Date getToDate() throws ParseException {
-		return DateUtils.stringToSpinnerEventDate(toDate, timeZone);
-		// return DateUtils.stringToEventDateTime(toDate);
+	public Date getToDate() throws ParseException{
+		Date toDate = new Date();
+		if(toDateString == null || toDateString.equals("")){			
+			toDate = DateUtils.addDuration(getFromDate(), duration);
+		}else{
+			toDate = DateUtils.stringToSpinnerEventDate(toDateString, timeZone);
+		}
+		return toDate;
 	}
 
 	public void setToDate(String toDate) {
-		this.toDate = toDate;
+		this.toDateString = toDate;
 	}
 
 	public int getMaxCapacity() {
@@ -92,7 +98,6 @@ public class SpinnerEventInputRequest {
 		Date openD = null;
 		if (openDate != null && openDate.compareTo("") != 0) {
 			openD = DateUtils.stringToSpinnerEventDate(openDate, timeZone);
-			// return DateUtils.stringToEventDateTime(openDate);
 		}
 		return openD;
 	}
@@ -142,4 +147,7 @@ public class SpinnerEventInputRequest {
 		this.numberOfOccurrences = numberOfOccurrences;
 	}
 
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 }

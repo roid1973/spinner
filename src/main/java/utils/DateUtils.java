@@ -92,4 +92,13 @@ public class DateUtils {
 		}
 		return newDate;
 	}
+
+	public static Date addDuration(Date d, String duration) throws ParseException {
+		Date newDate = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date durationDate = sdf.parse("1970-01-01 " + duration);
+		newDate.setTime(d.getTime() + durationDate.getTime());
+		return newDate;
+	}
+
 }
