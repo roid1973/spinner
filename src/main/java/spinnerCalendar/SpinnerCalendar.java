@@ -1,6 +1,7 @@
 package spinnerCalendar;
 
 import java.util.HashMap;
+import java.util.List;
 
 import db.spinner.DBspinner;
 
@@ -51,9 +52,11 @@ public class SpinnerCalendar {
 		return seId;
 	}
 
-	public void deleteSpinnerEventFromSpinnerCalendar(int eventId) throws Exception {
+	public SpinnerEvent deleteSpinnerEventFromSpinnerCalendar(int eventId) throws Exception {
 		DBspinner.deleteSpinnerEventFromDB(eventId);
+		SpinnerEvent se = eventsHashMap.get(eventId);
 		eventsHashMap.remove(eventId);
+		return se;
 	}
 
 	public SpinnerEvent getSpinnerEvent(int eventId) throws Exception {
@@ -63,5 +66,10 @@ public class SpinnerCalendar {
 		}
 		return se;
 	}
+
+//	public List<SpinnerEvent> getSpinnerRecurringEvents(String recurringId) {
+//		List<SpinnerEvent> recurringEventsList = DBspinner.getSpinnerCalendarRecurringEventsFromDB(recurringId);
+//		return recurringEventsList;
+//	}
 
 }

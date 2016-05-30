@@ -95,10 +95,17 @@ public class DateUtils {
 
 	public static Date addDuration(Date d, String duration) throws ParseException {
 		Date newDate = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		Date durationDate = sdf.parse("1970-01-01 " + duration);
+		// SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		// Date durationDate = sdf.parse("1970-01-01 " + duration);
+		Date durationDate = convertTimeToDate(duration);
 		newDate.setTime(d.getTime() + durationDate.getTime());
 		return newDate;
+	}
+
+	public static Date convertTimeToDate(String time) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date durationDate = sdf.parse("1970-01-01 " + time);
+		return durationDate;
 	}
 
 }

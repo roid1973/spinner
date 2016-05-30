@@ -13,6 +13,8 @@ public class SpinnerEvent {
 	private String eventName = null;
 	private Date fromDate = null;
 	private Date toDate = null;
+//	private int durationHr = 0;
+//	private int durationMin = 0;
 	private Date lockDate = null;
 	private Date openDate = null;
 	private int maxCapacity;

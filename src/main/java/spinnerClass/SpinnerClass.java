@@ -190,9 +190,9 @@ public class SpinnerClass {
 		return classCalendar.updateSpinnerEventDetails(eventId, newEvent);
 	}
 
-	protected void deleteSpinnerEventFromClassCalendar(int eventId) throws Exception {
+	protected SpinnerEvent deleteSpinnerEventFromClassCalendar(int eventId) throws Exception {
 		initClassCalendar();		
-		classCalendar.deleteSpinnerEventFromSpinnerCalendar(eventId);
+		return classCalendar.deleteSpinnerEventFromSpinnerCalendar(eventId);
 	}
 
 	protected StudentSpinnerEvent registerToSpinnerEvent(int eventId, int studentId) throws Exception {
@@ -219,7 +219,7 @@ public class SpinnerClass {
 		return se;
 	}
 
-	protected SpinnerCalendar getClassEvents() throws Exception {
+	public SpinnerCalendar getClassEvents() throws Exception {
 		initClassCalendar();
 		return classCalendar;
 	}

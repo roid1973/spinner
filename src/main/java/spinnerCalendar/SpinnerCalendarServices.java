@@ -4,6 +4,7 @@ import inputRequest.PersonDetailsClassInput;
 import inputRequest.SpinnerEventInputRequest;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -552,19 +553,49 @@ public class SpinnerCalendarServices {
 	}
 
 	@POST
+	@Path("/updateRecurringEvent/{classId}/{eventId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<SpinnerEvent> updateRecurringEvent(@PathParam("classId") int classId, @PathParam("recurringId") String recurringId, SpinnerEventInputRequest inputEvent) throws Exception {
+		List<SpinnerEvent> newEvents = new ArrayList<SpinnerEvent>();
+		HashMap<Integer, SpinnerEvent> events = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getClassEvents().getSpinnerCalendarEventsHashMap();
+		Iterator<Entry<Integer, SpinnerEvent>> it = events.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			SpinnerEvent se = (SpinnerEvent) pair.getValue();
+			if (se.getRecurringId().equals(recurringId)) {
+				SpinnerEvent newEvent = SpinnerClasses.getSpinnerClassesInstance().updateSpinnerEventInSpinnerCalendar(classId, se.getEventId(), se);
+				newEvents.add(newEvent);
+			}
+		}
+		return newEvents;
+	}
+
+	@POST
 	@Path("/deleteEvent/{classId}/{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public void deleteEvent(@PathParam("classId") int classId, @PathParam("eventId") int eventId) throws Exception {
-		SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(classId, eventId);
+	public SpinnerEvent deleteEvent(@PathParam("classId") int classId, @PathParam("eventId") int eventId) throws Exception {
+		SpinnerEvent se = SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(classId, eventId);
+		return se;
 	}
-	
-//	@POST
-//	@Path("/deleteRecurringEvent/{classId}/{recurringId}")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public void deleteEvent(@PathParam("classId") int classId, @PathParam("recurringId") String recurringId) throws Exception {
-//		SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(classId, eventId);
-//	}
+
+	@POST
+	@Path("/deleteRecurringEvent/{classId}/{recurringId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public SpinnerEvent deleteEvent(@PathParam("classId") int classId, @PathParam("recurringId") String recurringId) throws Exception {
+		SpinnerEvent see = null;
+		HashMap<Integer, SpinnerEvent> events = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getClassEvents().getSpinnerCalendarEventsHashMap();
+		Iterator it = events.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			SpinnerEvent se = (SpinnerEvent) pair.getValue();
+			if (se.getRecurringId().equals(recurringId)) {
+				see = SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(classId, se.getEventId());
+			}
+		}
+		return see;
+	}
 
 }

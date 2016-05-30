@@ -75,10 +75,10 @@ public class SpinnerClasses {
 		return sc.updateSpinnerEventToClassCalendar(eventId, newEvent);
 	}
 
-	public void deleteSpinnerEventFromSpinnerCalendar(int classId, int eventId) throws Exception {
+	public SpinnerEvent deleteSpinnerEventFromSpinnerCalendar(int classId, int eventId) throws Exception {
 		SpinnerClass sc = getSpinnerClass(classId);
 		unRegisterAllFromSpinnerEvent(classId, eventId);
-		sc.deleteSpinnerEventFromClassCalendar(eventId);
+		return sc.deleteSpinnerEventFromClassCalendar(eventId);
 	}
 
 	public PersonSpinnerClass assignStudentToClass(int personId, int classId, int numberOfValidRegistrations) throws Exception {
@@ -288,5 +288,11 @@ public class SpinnerClasses {
 		}
 		return persons;
 	}
+
+//	public List<SpinnerEvent> getRecurringEvents(int classId, String recurringId) {
+//		SpinnerClass sc = getSpinnerClass(classId);		
+//		List recurringEventsList = sc.getClassEvents().getSpinnerRecurringEvents(recurringId);
+//		return recurringEventsList;
+//	}
 
 }
