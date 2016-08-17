@@ -1,6 +1,7 @@
 package spinnerClass;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,9 +40,9 @@ public class SpinnerClasses {
 		spinnerClasses = DBspinner.getSpinnerClassListFromDB();
 	}
 
-	public SpinnerClass addSpinnerClass(String className, String hyperLink) throws Exception {
-		SpinnerClass sc = new SpinnerClass(className, hyperLink);
-		int id = DBspinner.addClass(className);
+	public SpinnerClass addSpinnerClass(String className, String openForRegistrationMode, int lockForRegistration, String hyperLink) throws Exception {
+		SpinnerClass sc = new SpinnerClass(className, openForRegistrationMode, lockForRegistration, hyperLink);
+		int id = DBspinner.addClass(sc);
 		sc.setId(id);
 		spinnerClasses.put(sc.getId(), sc);
 		return sc;
@@ -76,6 +77,12 @@ public class SpinnerClasses {
 	}
 
 	public SpinnerEvent deleteSpinnerEventFromSpinnerCalendar(int classId, int eventId) throws Exception {
+		Date now = new Date();
+		Date from = getSpinnerClass(classId).getClassEvent(eventId).getFromDate();
+		if (from.before(now)) {
+			throw new Exception("cannot delete history event");
+		}
+		
 		SpinnerClass sc = getSpinnerClass(classId);
 		unRegisterAllFromSpinnerEvent(classId, eventId);
 		return sc.deleteSpinnerEventFromClassCalendar(eventId);
@@ -159,14 +166,20 @@ public class SpinnerClasses {
 	}
 
 	private void unRegisterAllFromSpinnerEvent(int classId, int eventId) throws Exception {
-		boolean updateCredit = false;
-		if (!getSpinnerClass(classId).getClassEvent(eventId).getStatus().equals(Status.EVENT_OPEN)) {
-			updateCredit = true;
+		
+		Date now = new Date();
+		Date from = getSpinnerClass(classId).getClassEvent(eventId).getFromDate();
+		if (from.before(now)) {
+			throw new Exception("cannot unregister from history event");
 		}
+		
+		boolean updateCredit = true;
+		List<Person> unregister = getEventUnregisteredStudents(classId, eventId);
+		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, unregister, false);
 		List<Person> registered = getEventRegisteredStudents(classId, eventId);
 		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, registered, updateCredit);
 		List<Person> standBy = getEventStandbyStudents(classId, eventId);
-		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, standBy, false);
+		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, standBy, false);		
 	}
 
 	private void unregisterListOfStudentsFromSpinnerEvent(int classId, int eventId, List<Person> students, boolean updateCredit) throws Exception {
@@ -278,6 +291,13 @@ public class SpinnerClasses {
 		return getPersons(ids);
 	}
 
+	public List<Person> getEventUnregisteredStudents(int classId, int eventId) throws Exception {
+		SpinnerClass sc = getSpinnerClass(classId);
+		SpinnerEvent se = sc.getClassEvent(eventId);
+		List<Integer> ids = se.getUnregistered();
+		return getPersons(ids);
+	}
+
 	private List<Person> getPersons(List<Integer> ids) throws Exception {
 		ArrayList<Person> persons = new ArrayList<Person>();
 		Iterator<Integer> iterator = ids.iterator();
@@ -289,10 +309,10 @@ public class SpinnerClasses {
 		return persons;
 	}
 
-//	public List<SpinnerEvent> getRecurringEvents(int classId, String recurringId) {
-//		SpinnerClass sc = getSpinnerClass(classId);		
-//		List recurringEventsList = sc.getClassEvents().getSpinnerRecurringEvents(recurringId);
-//		return recurringEventsList;
-//	}
+	// public List<SpinnerEvent> getRecurringEvents(int classId, String recurringId) {
+	// SpinnerClass sc = getSpinnerClass(classId);
+	// List recurringEventsList = sc.getClassEvents().getSpinnerRecurringEvents(recurringId);
+	// return recurringEventsList;
+	// }
 
 }

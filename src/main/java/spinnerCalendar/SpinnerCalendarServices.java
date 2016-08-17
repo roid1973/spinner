@@ -304,7 +304,7 @@ public class SpinnerCalendarServices {
 	@Produces(MediaType.APPLICATION_JSON)
 	public SpinnerClass addClass(Map<String, SpinnerClassInputRequest> input) throws Exception {
 		SpinnerClassInputRequest inputClass = (input.entrySet().iterator().next()).getValue();
-		SpinnerClass sc = SpinnerClasses.getSpinnerClassesInstance().addSpinnerClass(inputClass.getClassName(), inputClass.getHyperLink());
+		SpinnerClass sc = SpinnerClasses.getSpinnerClassesInstance().addSpinnerClass(inputClass.getClassName(), inputClass.getOpenForRegistrationMode(), inputClass.getLockForRegistration(), inputClass.getHyperLink());
 		return sc;
 	}
 
@@ -523,21 +523,26 @@ public class SpinnerCalendarServices {
 		Date fromDate = inputEvent.getFromDate();
 		String recurringId = UUID.randomUUID().toString();
 		Date toDate = inputEvent.getToDate();
-		Date openDate = inputEvent.getOpenDate();
+		String openForRegistrationMode = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getOpenForRegistrationMode();
+		Date openDate = DateUtils.calcOpenDate(openForRegistrationMode, fromDate);
+		int lockForRegistration = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getLockForRegistration();
 		int interval = inputEvent.getInterval();
 		for (int i = 0; i < inputEvent.getNumberOfOccurrences(); i++) {
-			SpinnerEvent se = new SpinnerEvent(classId, recurringId, inputEvent.getEventName(), fromDate, toDate, inputEvent.getLockTime(), openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+			SpinnerEvent se = new SpinnerEvent(classId, recurringId, inputEvent.getEventName(), fromDate, toDate, lockForRegistration, openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 			se = SpinnerClasses.getSpinnerClassesInstance().addSpinnerEventToSpinnerCalendar(classId, se);
 			events.add(se);
 			fromDate = DateUtils.addDaysToDate(fromDate, interval);
 			toDate = DateUtils.addDaysToDate(toDate, interval);
-			openDate = DateUtils.addDaysToDate(openDate, interval);
+			openDate = DateUtils.calcOpenDate(openForRegistrationMode, fromDate);
 		}
 		return events;
 	}
 
 	private SpinnerEvent addEvent(@PathParam("classId") int classId, SpinnerEventInputRequest inputEvent) throws Exception {
-		SpinnerEvent se = new SpinnerEvent(classId, "NA", inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+		String openForRegistrationMode = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getOpenForRegistrationMode();
+		Date openDate = DateUtils.calcOpenDate(openForRegistrationMode, inputEvent.getFromDate());
+		int lockForRegistration = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getLockForRegistration();
+		SpinnerEvent se = new SpinnerEvent(classId, "NA", inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), lockForRegistration, openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 		se = SpinnerClasses.getSpinnerClassesInstance().addSpinnerEventToSpinnerCalendar(classId, se);
 		return se;
 	}
@@ -547,12 +552,15 @@ public class SpinnerCalendarServices {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public SpinnerEvent updateEvent(@PathParam("classId") int classId, @PathParam("eventId") int eventId, SpinnerEventInputRequest inputEvent) throws Exception {
-		SpinnerEvent se = new SpinnerEvent(classId, "NA", inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), inputEvent.getLockTime(), inputEvent.getOpenDate(), inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
+		String openForRegistrationMode = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getOpenForRegistrationMode();
+		Date openDate = DateUtils.calcOpenDate(openForRegistrationMode, inputEvent.getFromDate());
+		int lockForRegistration = SpinnerClasses.getSpinnerClassesInstance().getSpinnerClass(classId).getLockForRegistration();
+		SpinnerEvent se = new SpinnerEvent(classId, "NA", inputEvent.getEventName(), inputEvent.getFromDate(), inputEvent.getToDate(), lockForRegistration, openDate, inputEvent.getMaxCapacity(), inputEvent.getInstructorId(), inputEvent.getAddress(), inputEvent.getComments(), inputEvent.getStatus());
 		se = SpinnerClasses.getSpinnerClassesInstance().updateSpinnerEventInSpinnerCalendar(classId, eventId, se);
 		return se;
 	}
 
-	@POST
+/*	@POST
 	@Path("/updateRecurringEvent/{classId}/{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -564,13 +572,13 @@ public class SpinnerCalendarServices {
 			Map.Entry pair = (Map.Entry) it.next();
 			SpinnerEvent se = (SpinnerEvent) pair.getValue();
 			if (se.getRecurringId().equals(recurringId)) {
-				SpinnerEvent newEvent = SpinnerClasses.getSpinnerClassesInstance().updateSpinnerEventInSpinnerCalendar(classId, se.getEventId(), se);
+				SpinnerEvent newEvent = SpinnerClasses.getSpinnerClassesInstance().updateSpinnerEventInSpinnerCalendar(classId, se.getEventId(), newSE);
 				newEvents.add(newEvent);
 			}
 		}
 		return newEvents;
 	}
-
+*/
 	@POST
 	@Path("/deleteEvent/{classId}/{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)

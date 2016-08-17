@@ -1,6 +1,12 @@
 ALTER TABLE events DROP recurringId;
 ALTER TABLE events ADD COLUMN recurringId VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER eventId;
 
+ALTER TABLE class DROP openForRegistrationMode;
+ALTER TABLE class ADD COLUMN openForRegistrationMode VARCHAR(255) NOT NULL DEFAULT 'MONTHLY' AFTER className;
+
+ALTER TABLE class DROP lockForRegistration;
+ALTER TABLE class ADD COLUMN lockForRegistration INT DEFAULT 0 AFTER openForRegistrationMode;
+
 DROP DATABASE IF EXISTS spinnerDB2;
 CREATE DATABASE IF NOT EXISTS spinnerDB2;
 

@@ -110,9 +110,9 @@ public class SpinnerEventTest {
 
 		System.out.println("adding classes to DB");
 		classes = SpinnerClasses.getSpinnerClassesInstance();
-		sc1 = classes.addSpinnerClass(spinnerClassName1, null);
-		sc2 = classes.addSpinnerClass(spinnerClassName2, null);
-		sc3 = classes.addSpinnerClass(spinnerClassName3, null);
+		sc1 = classes.addSpinnerClass(spinnerClassName1, "WEEKLY", 1, "http://www.google.com");
+		sc2 = classes.addSpinnerClass(spinnerClassName2, "WEEKLY", 1, "http://www.google.com");
+		sc3 = classes.addSpinnerClass(spinnerClassName3, "WEEKLY", 1, "http://www.google.com");
 
 		System.out.println("adding students to DB");
 		persons = Persons.getPersonsInstance();
@@ -480,7 +480,7 @@ public class SpinnerEventTest {
 
 	@Test
 	public void testAddDeleteClass() throws Exception {
-		SpinnerClass sc = classes.addSpinnerClass("testAddDeleteClass", null);
+		SpinnerClass sc = classes.addSpinnerClass("testAddDeleteClass", "WEEKLY", 1, "http://www.google.com");
 		assertNotNull(classes.getSpinnerClass(sc.getId()));
 		classes.deleteSpinnerClass(sc.getId());
 		assertNull(classes.getSpinnerClass(sc.getId()));

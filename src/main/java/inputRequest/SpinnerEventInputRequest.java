@@ -13,8 +13,8 @@ public class SpinnerEventInputRequest {
 	private String fromDate; // dd.MM.yyyy HH:mm:ss
 	private String toDateString; // dd.MM.yyyy HH:mm:ss
 	private String timeZone;
-	private int lockTime;
-	private String openDate;
+	//private int lockTime;
+	//private String openDate;
 	private int maxCapacity;
 	private int instructorId;
 	private String address;
@@ -85,7 +85,7 @@ public class SpinnerEventInputRequest {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-
+/*
 	public int getLockTime() {
 		return lockTime;
 	}
@@ -105,7 +105,7 @@ public class SpinnerEventInputRequest {
 	public void setOpenDate(String openDate) {
 		this.openDate = openDate;
 	}
-
+*/
 	public String getAddress() {
 		return address;
 	}

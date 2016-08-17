@@ -108,4 +108,27 @@ public class DateUtils {
 		return durationDate;
 	}
 
+	public static Date calcOpenDate(String openForRegistrationMode, Date fromDate) throws Exception {
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(fromDate);
+		Date openDate = new Date();
+
+		if (openForRegistrationMode.compareTo("MONTHLY") == 0) {
+			c.set(Calendar.MONTH, -1);
+			c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
+			c.set(Calendar.HOUR_OF_DAY, 8);
+			openDate = c.getTime();
+		}
+
+		if (openForRegistrationMode.compareTo("WEEKLY") == 0) {
+			c.add(Calendar.DAY_OF_MONTH, -7);
+			c.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+			c.set(Calendar.HOUR_OF_DAY, 17);
+			openDate = c.getTime();
+		}
+
+		return openDate;
+	}
+
 }

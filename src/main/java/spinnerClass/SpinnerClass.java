@@ -24,9 +24,13 @@ public class SpinnerClass {
 	private HashMap<Integer, PersonSpinnerClass> students = null;
 	private HashMap<Integer, PersonSpinnerClass> instructors = null;
 	private HashMap<Integer, PersonSpinnerClass> admins = null;
+	private String openForRegistrationMode;
+	private int lockForRegistration;
 
-	public SpinnerClass(String className, String hyperLink) {
+	public SpinnerClass(String className, String openForRegistrationMode, int lockForRegistration, String hyperLink) {
 		spinnerClassName = className;
+		this.openForRegistrationMode=openForRegistrationMode;
+		this.lockForRegistration=lockForRegistration;
 		this.hyperLink = hyperLink;
 	}
 
@@ -71,6 +75,15 @@ public class SpinnerClass {
 	public int getId() {
 		return classId;
 	}
+	
+	public String getOpenForRegistrationMode() {
+		return openForRegistrationMode;
+	}
+
+	public int getLockForRegistration() {
+		return lockForRegistration;
+	}
+
 
 	public String getHyperLink() {
 		return hyperLink;
@@ -292,5 +305,10 @@ public class SpinnerClass {
 		return student;
 
 	}
+
+
+	
+
+
 
 }

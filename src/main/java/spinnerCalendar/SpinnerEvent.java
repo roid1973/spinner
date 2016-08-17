@@ -13,14 +13,15 @@ public class SpinnerEvent {
 	private String eventName = null;
 	private Date fromDate = null;
 	private Date toDate = null;
-//	private int durationHr = 0;
-//	private int durationMin = 0;
+	// private int durationHr = 0;
+	// private int durationMin = 0;
 	private Date lockDate = null;
 	private Date openDate = null;
 	private int maxCapacity;
 	private boolean isEventFull;
 	private List<Integer> registered = null;
 	private List<Integer> standby = null;
+	private List<Integer> unregistered = null;
 	private int instructorId;
 	private String address = null;
 	private String comments = null;
@@ -204,6 +205,13 @@ public class SpinnerEvent {
 		return standby;
 	}
 
+	public List<Integer> getUnregistered() throws Exception {
+		if (unregistered == null) {
+			initRegistration();
+		}
+		return unregistered;
+	}
+
 	// Public Methods
 
 	public String registerToSpinnerEvent(PersonSpinnerClass s) throws Exception {
@@ -286,10 +294,11 @@ public class SpinnerEvent {
 	}
 
 	private void initRegistration() throws Exception {
-		if (registered == null && standby == null) {
+		if (registered == null && standby == null && unregistered == null) {
 			registered = new ArrayList<Integer>();
 			standby = new ArrayList<Integer>();
-			DBspinner.initEventRegistrations(eventId, registered, standby);
+			unregistered = new ArrayList<Integer>();
+			DBspinner.initEventRegistrations(eventId, registered, standby, unregistered);
 		}
 	}
 
@@ -300,6 +309,9 @@ public class SpinnerEvent {
 	private void register(PersonSpinnerClass s) throws Exception {
 		DBspinner.updateRegistration(classId, eventId, s.getPerson().getId(), Status.REGISTERED);
 		registered.add(s.getPerson().getId());
+		if (unregistered.contains(s.getPerson().getId())) {
+			unregistered.remove((Integer) s.getPerson().getId());
+		}
 	}
 
 	private boolean unregister(PersonSpinnerClass s) throws Exception {
@@ -319,6 +331,7 @@ public class SpinnerEvent {
 			DBspinner.updateRegistration(classId, eventId, s.getPerson().getId(), Status.CANCEL_STANDBY);
 			standby.remove((Integer) s.getPerson().getId());
 		}
+		unregistered.add((Integer) s.getPerson().getId());
 		return notifyStanby;
 	}
 
@@ -328,6 +341,9 @@ public class SpinnerEvent {
 			sts = Status.STANDBY;
 			DBspinner.updateRegistration(classId, eventId, s.getPerson().getId(), Status.STANDBY);
 			standby.add(s.getPerson().getId());
+			if (unregistered.contains(s.getPerson().getId())) {
+				unregistered.remove((Integer) s.getPerson().getId());
+			}
 		} else {
 			sts = Status.STANDBY;
 		}
