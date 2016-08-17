@@ -25,17 +25,17 @@ public class DBspinner {
 
 	public static int findEvent(int classId, String eventName, Date fromDate) throws Exception {
 		int eventId = 0;
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementFindEvent(classId, eventName, fromDate, conn);
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementFindEvent(classId, eventName, fromDate, conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				eventId = rs.getInt("eventId");
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					eventId = rs.getInt("eventId");
+				}
 			}
+			return eventId;
 		}
-		conn.close();
-		return eventId;
 	}
 
 	private static PreparedStatement prepareSatementFindEvent(int classId, String eventName, Date fromDate, Connection conn) throws SQLException {
@@ -52,45 +52,45 @@ public class DBspinner {
 	}
 
 	public static SpinnerEvent addSpinnerEventInToDB(SpinnerEvent se) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementInsertEvent(se, conn);
-		preparedStmt.executeUpdate();
-		ResultSet rs = preparedStmt.getGeneratedKeys();
-		if (rs.next()) {
-			int eventId = rs.getInt(1);
-			se.setEventId(eventId);
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementInsertEvent(se, conn);
+			preparedStmt.executeUpdate();
+			ResultSet rs = preparedStmt.getGeneratedKeys();
+			if (rs.next()) {
+				int eventId = rs.getInt(1);
+				se.setEventId(eventId);
+			}
+			return se;
 		}
-		conn.close();
-		return se;
 	}
 
 	public static HashMap<Integer, SpinnerEvent> getSpinnerCalendarEventsFromDB(int classId) throws Exception {
-		HashMap<Integer, SpinnerEvent> eventsList = new HashMap<Integer, SpinnerEvent>();
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetSpinnerCalendarEventsFromDB(classId, conn);
+		try (Connection conn = DButils.getDBconnection()) {
+			HashMap<Integer, SpinnerEvent> eventsList = new HashMap<Integer, SpinnerEvent>();
+			PreparedStatement preparedStmt = prepareSatementGetSpinnerCalendarEventsFromDB(classId, conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
 
-			while (rs.next()) {
-				int eventId = rs.getInt("eventId");
-				String recurringId = rs.getString("recurringId");
-				String eventName = rs.getString("eventName");
-				Date fromDate = rs.getTimestamp("fromDate");
-				Date toDate = rs.getTimestamp("toDate");
-				int lockTime = rs.getInt("lockTime");
-				Date openDate = rs.getTimestamp("openDate");
-				int maxCapacity = rs.getInt("maxCapacity");
-				int instructorId = rs.getInt("instructorId");
-				String address = rs.getString("address");
-				String comments = rs.getString("comments");
-				String status = rs.getString("status");
-				SpinnerEvent se = new SpinnerEvent(classId, eventId, recurringId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status);
-				eventsList.put(se.getEventId(), se);
+				while (rs.next()) {
+					int eventId = rs.getInt("eventId");
+					String recurringId = rs.getString("recurringId");
+					String eventName = rs.getString("eventName");
+					Date fromDate = rs.getTimestamp("fromDate");
+					Date toDate = rs.getTimestamp("toDate");
+					int lockTime = rs.getInt("lockTime");
+					Date openDate = rs.getTimestamp("openDate");
+					int maxCapacity = rs.getInt("maxCapacity");
+					int instructorId = rs.getInt("instructorId");
+					String address = rs.getString("address");
+					String comments = rs.getString("comments");
+					String status = rs.getString("status");
+					SpinnerEvent se = new SpinnerEvent(classId, eventId, recurringId, eventName, fromDate, toDate, lockTime, openDate, maxCapacity, instructorId, address, comments, status);
+					eventsList.put(se.getEventId(), se);
+				}
 			}
+			return eventsList;
 		}
-		conn.close();
-		return eventsList;
 	}
 
 	private static PreparedStatement prepareSatementGetSpinnerCalendarEventsFromDB(int classId, Connection conn) throws SQLException {
@@ -143,10 +143,10 @@ public class DBspinner {
 	}
 
 	public static void updateSpinnerEvent(SpinnerEvent newEvent) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementUpdateEvent(newEvent, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementUpdateEvent(newEvent, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUpdateEvent(SpinnerEvent newEvent, Connection conn) throws Exception {
@@ -171,10 +171,10 @@ public class DBspinner {
 	// }
 
 	public static void updateInstructorEvent(int instructorId, int eventId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementUpdateInstructorEvent(instructorId, eventId, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementUpdateInstructorEvent(instructorId, eventId, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUpdateInstructorEvent(int instructorId, int eventId, Connection conn) throws SQLException {
@@ -190,17 +190,17 @@ public class DBspinner {
 	}
 
 	public static void deleteSpinnerEventFromDB(int eventId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementDeleteEvent(eventId, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementDeleteEvent(eventId, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	public static void deleteClassEvents(int classId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementDeleteClassEvents(classId, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementDeleteClassEvents(classId, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementDeleteEvent(int eventId, Connection conn) throws SQLException {
@@ -227,16 +227,16 @@ public class DBspinner {
 
 	// Person Table
 	public static Person insertPersonInToDB(Person p) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementInsertPerson(p, conn);
-		preparedStmt.executeUpdate();
-		ResultSet rs = preparedStmt.getGeneratedKeys();
-		if (rs.next()) {
-			int personId = rs.getInt(1);
-			p.setId(personId);
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementInsertPerson(p, conn);
+			preparedStmt.executeUpdate();
+			ResultSet rs = preparedStmt.getGeneratedKeys();
+			if (rs.next()) {
+				int personId = rs.getInt(1);
+				p.setId(personId);
+			}
+			return p;
 		}
-		conn.close();
-		return p;
 	}
 
 	private static PreparedStatement prepareSatementInsertPerson(Person p, Connection conn) throws SQLException {
@@ -256,19 +256,19 @@ public class DBspinner {
 	}
 
 	public static void deletePersonFromDB(int personId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementDeletePerson(TABLE_PERSON_CLASS, personId, conn);
-		prepareSatementDeletePersonFromClass.execute();
-		PreparedStatement prepareSatementDeletePerson = prepareSatementDeletePerson(TABLE_PERSON, personId, conn);
-		prepareSatementDeletePerson.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementDeletePerson(TABLE_PERSON_CLASS, personId, conn);
+			prepareSatementDeletePersonFromClass.execute();
+			PreparedStatement prepareSatementDeletePerson = prepareSatementDeletePerson(TABLE_PERSON, personId, conn);
+			prepareSatementDeletePerson.execute();
+		}
 	}
 
 	public static void removePersonFromClass(int perosnId, int classId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementDeletePersonFromClass(perosnId, classId, conn);
-		prepareSatementDeletePersonFromClass.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementDeletePersonFromClass(perosnId, classId, conn);
+			prepareSatementDeletePersonFromClass.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementDeletePerson(String tableName, int personId, Connection conn) throws SQLException {
@@ -296,10 +296,10 @@ public class DBspinner {
 	}
 
 	public static void updatePersonDetails(Person newPerson) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement prepareSatementUpdatePersonDetails = prepareSatementUpdatePersonDetails(newPerson, conn);
-		prepareSatementUpdatePersonDetails.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement prepareSatementUpdatePersonDetails = prepareSatementUpdatePersonDetails(newPerson, conn);
+			prepareSatementUpdatePersonDetails.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUpdatePersonDetails(Person newPerson, Connection conn) throws SQLException {
@@ -320,10 +320,10 @@ public class DBspinner {
 	}
 
 	public static void unAssignPersonsFromClass(int classId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementUnAssignPersonsFromClass(classId, conn);
-		prepareSatementDeletePersonFromClass.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement prepareSatementDeletePersonFromClass = prepareSatementUnAssignPersonsFromClass(classId, conn);
+			prepareSatementDeletePersonFromClass.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUnAssignPersonsFromClass(int classId, Connection conn) throws SQLException {
@@ -338,18 +338,18 @@ public class DBspinner {
 	}
 
 	public static int findPerson(String phoneNumber, String firstName) throws Exception {
-		int personId = 0;
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementFindPerson(phoneNumber, firstName, conn);
+		try (Connection conn = DButils.getDBconnection()) {
+			int personId = 0;
+			PreparedStatement preparedStmt = prepareSatementFindPerson(phoneNumber, firstName, conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				personId = rs.getInt("personId");
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					personId = rs.getInt("personId");
+				}
 			}
+			return personId;
 		}
-		conn.close();
-		return personId;
 	}
 
 	private static PreparedStatement prepareSatementFindPerson(String phoneNumber, String firstName, Connection conn) throws SQLException {
@@ -365,26 +365,26 @@ public class DBspinner {
 	}
 
 	public static HashMap<Integer, Person> getPersonHashMapFromDB() throws Exception {
-		HashMap<Integer, Person> personList = new HashMap<Integer, Person>();
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetPerson(conn);
+		try (Connection conn = DButils.getDBconnection()) {
+			HashMap<Integer, Person> personList = new HashMap<Integer, Person>();
+			PreparedStatement preparedStmt = prepareSatementGetPerson(conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				int personId = rs.getInt("personId");
-				String phoneNumber = rs.getString("phoneNumber");
-				String firstName = rs.getString("firstName");
-				String lastName = rs.getString("lastName");
-				String address = rs.getString("address");
-				String email = rs.getString("email");
-				Date birthDate = rs.getTimestamp("birthDate");
-				Person p = new Person(personId, phoneNumber, firstName, lastName, address, email, birthDate);
-				personList.put(p.getId(), p);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					int personId = rs.getInt("personId");
+					String phoneNumber = rs.getString("phoneNumber");
+					String firstName = rs.getString("firstName");
+					String lastName = rs.getString("lastName");
+					String address = rs.getString("address");
+					String email = rs.getString("email");
+					Date birthDate = rs.getTimestamp("birthDate");
+					Person p = new Person(personId, phoneNumber, firstName, lastName, address, email, birthDate);
+					personList.put(p.getId(), p);
+				}
 			}
+			return personList;
 		}
-		conn.close();
-		return personList;
 	}
 
 	private static PreparedStatement prepareSatementGetPerson(Connection conn) throws SQLException {
@@ -394,35 +394,38 @@ public class DBspinner {
 	}
 
 	// Class
-	public static int addClass(String className) throws Exception {
-		int id = 0;
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementAddClassName(className, conn);
-		preparedStmt.executeUpdate();
-		ResultSet rs = preparedStmt.getGeneratedKeys();
-		if (rs.next()) {
-			id = rs.getInt(1);
+	public static int addClass(SpinnerClass sc) throws Exception {
+		try (Connection conn = DButils.getDBconnection()) {
+			int id = 0;
+			PreparedStatement preparedStmt = prepareSatementAddClassName(sc, conn);
+			preparedStmt.executeUpdate();
+			ResultSet rs = preparedStmt.getGeneratedKeys();
+			if (rs.next()) {
+				id = rs.getInt(1);
+			}
+			return id;
 		}
-		conn.close();
-		return id;
 	}
 
-	private static PreparedStatement prepareSatementAddClassName(String className, Connection conn) throws SQLException {
-		String query = " insert into " + TABLE_CLASS + " (className)" + " values (?)";
+	private static PreparedStatement prepareSatementAddClassName(SpinnerClass sc, Connection conn) throws SQLException {
+		String query = " insert into " + TABLE_CLASS + " (className, openForRegistrationMode, lockForRegistration, hyperLink)" + " values (?,?,?,?)";
 		PreparedStatement preparedStmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		prepareStatementAddClassName(className, preparedStmt);
+		prepareStatementAddClassName(sc, preparedStmt);
 		return preparedStmt;
 	}
 
-	private static void prepareStatementAddClassName(String className, PreparedStatement preparedStmt) throws SQLException {
-		preparedStmt.setString(1, className);
+	private static void prepareStatementAddClassName(SpinnerClass sc, PreparedStatement preparedStmt) throws SQLException {
+		preparedStmt.setString(1, sc.getSpinnerClassName());
+		preparedStmt.setString(2, sc.getOpenForRegistrationMode());
+		preparedStmt.setInt(3, sc.getLockForRegistration());
+		preparedStmt.setString(4, sc.getHyperLink());
 	}
 
 	public static void deleteSpinnerClass(int classId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement prepareSatement = prepareSatementDeleteClassName(classId, conn);
-		prepareSatement.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement prepareSatement = prepareSatementDeleteClassName(classId, conn);
+			prepareSatement.execute();
+		}
 
 	}
 
@@ -438,19 +441,19 @@ public class DBspinner {
 	}
 
 	public static HashMap<Integer, SpinnerClass> getSpinnerClassListFromDB() throws Exception {
-		HashMap<Integer, SpinnerClass> spinnerClasses = new HashMap<Integer, SpinnerClass>();
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetClasses(conn);
+		try (Connection conn = DButils.getDBconnection()) {
+			HashMap<Integer, SpinnerClass> spinnerClasses = new HashMap<Integer, SpinnerClass>();
+			PreparedStatement preparedStmt = prepareSatementGetClasses(conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				SpinnerClass sc = generateSpinnerClass(rs);
-				spinnerClasses.put(sc.getId(), sc);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					SpinnerClass sc = generateSpinnerClass(rs);
+					spinnerClasses.put(sc.getId(), sc);
+				}
 			}
+			return spinnerClasses;
 		}
-		conn.close();
-		return spinnerClasses;
 	}
 
 	private static PreparedStatement prepareSatementGetClasses(Connection conn) throws SQLException {
@@ -462,17 +465,19 @@ public class DBspinner {
 	private static SpinnerClass generateSpinnerClass(ResultSet rs) throws Exception {
 		String className = rs.getString("className");
 		int classId = rs.getInt("classId");
+		String openForRegistrationMode = rs.getString("openForRegistrationMode");
+		int lockForRegistration = rs.getInt("lockForRegistration");
 		String hyperLink = rs.getString("hyperLink");
-		SpinnerClass sc = new SpinnerClass(className, hyperLink);
+		SpinnerClass sc = new SpinnerClass(className, openForRegistrationMode, lockForRegistration, hyperLink);
 		sc.setId(classId);
 		return sc;
 	}
 
 	public static void assignPersonToClass(SpinnerClass sc, PersonSpinnerClass psc) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementAssignPersonToClass(sc, psc, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementAssignPersonToClass(sc, psc, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementAssignPersonToClass(SpinnerClass sc, PersonSpinnerClass psc, Connection conn) throws Exception {
@@ -490,11 +495,10 @@ public class DBspinner {
 	}
 
 	public static void unAssignPersonFromClass(SpinnerClass sc, PersonSpinnerClass psc) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementUnAssignPersonFromClass(sc, psc, conn);
-		preparedStmt.execute();
-		conn.close();
-
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementUnAssignPersonFromClass(sc, psc, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUnAssignPersonFromClass(SpinnerClass sc, PersonSpinnerClass psc, Connection conn) throws Exception {
@@ -511,21 +515,21 @@ public class DBspinner {
 	}
 
 	public static HashMap<Integer, PersonSpinnerClass> getClassPersonsListFromDB(int classId, String type) throws Exception {
-		HashMap<Integer, PersonSpinnerClass> classPerons = new HashMap<Integer, PersonSpinnerClass>();
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetClassPersonsList(conn, classId, type);
+		try (Connection conn = DButils.getDBconnection()) {
+			HashMap<Integer, PersonSpinnerClass> classPerons = new HashMap<Integer, PersonSpinnerClass>();
+			PreparedStatement preparedStmt = prepareSatementGetClassPersonsList(conn, classId, type);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				int personId = rs.getInt("personId");
-				int numberOfValidRegistrations = rs.getInt("numberOfValidRegistrations");
-				PersonSpinnerClass psc = new PersonSpinnerClass(classId, personId, type, numberOfValidRegistrations);
-				classPerons.put(psc.getPersonId(), psc);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					int personId = rs.getInt("personId");
+					int numberOfValidRegistrations = rs.getInt("numberOfValidRegistrations");
+					PersonSpinnerClass psc = new PersonSpinnerClass(classId, personId, type, numberOfValidRegistrations);
+					classPerons.put(psc.getPersonId(), psc);
+				}
 			}
+			return classPerons;
 		}
-		conn.close();
-		return classPerons;
 	}
 
 	private static PreparedStatement prepareSatementGetClassPersonsList(Connection conn, int classId, String type) throws Exception {
@@ -541,11 +545,10 @@ public class DBspinner {
 	}
 
 	public static void updatePersonNumberOfValidRegistrations(int classId, int personId, int numberOfValidRegistrations) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementUpdatePersonNumberOfValidRegistrations(classId, personId, numberOfValidRegistrations, conn);
-		preparedStmt.execute();
-		conn.close();
-
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementUpdatePersonNumberOfValidRegistrations(classId, personId, numberOfValidRegistrations, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementUpdatePersonNumberOfValidRegistrations(int classId, int personId, int numberOfValidRegistrations, Connection conn) throws SQLException {
@@ -563,11 +566,10 @@ public class DBspinner {
 
 	// Registeration
 	public static void updateRegistration(int classId, int eventId, int personId, String status) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementRegisterStudentToSpinnerEvent(classId, eventId, personId, status, conn);
-		preparedStmt.execute();
-		conn.close();
-
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = prepareSatementRegisterStudentToSpinnerEvent(classId, eventId, personId, status, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement prepareSatementRegisterStudentToSpinnerEvent(int classId, int eventId, int personId, String status, Connection conn) throws SQLException {
@@ -585,10 +587,10 @@ public class DBspinner {
 	}
 
 	public static void deleteStudentRegisterationFromClassEvents(int classId, int personId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = deleteStudentRegisterationFromClassEvents(classId, personId, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = deleteStudentRegisterationFromClassEvents(classId, personId, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement deleteStudentRegisterationFromClassEvents(int classId, int personId, Connection conn) throws SQLException {
@@ -604,10 +606,10 @@ public class DBspinner {
 	}
 
 	public static void deleteStudentRegisterationFromClassEvent(int classId, int personId, int eventId) throws Exception {
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = deleteStudentRegisterationFromClassEvent(classId, personId, eventId, conn);
-		preparedStmt.execute();
-		conn.close();
+		try (Connection conn = DButils.getDBconnection()) {
+			PreparedStatement preparedStmt = deleteStudentRegisterationFromClassEvent(classId, personId, eventId, conn);
+			preparedStmt.execute();
+		}
 	}
 
 	private static PreparedStatement deleteStudentRegisterationFromClassEvent(int classId, int personId, int eventId, Connection conn) throws SQLException {
@@ -623,7 +625,7 @@ public class DBspinner {
 		preparedStmt.setInt(3, eventId);
 	}
 
-	public static void initEventRegistrations(int eventId, List<Integer> registered, List<Integer> standBy) throws Exception {
+	public static void initEventRegistrations(int eventId, List<Integer> registered, List<Integer> standBy, List<Integer> unregistered) throws Exception {
 		List<Integer> allRegisterationsPersonIds = getPersonIdRegistrations(eventId);
 		Iterator<Integer> allRegisterationsPersonIdsIterator = allRegisterationsPersonIds.iterator();
 		while (allRegisterationsPersonIdsIterator.hasNext()) {
@@ -634,6 +636,9 @@ public class DBspinner {
 			}
 			if (status.equals(Status.STANDBY)) {
 				standBy.add(personId);
+			}
+			if (status.equals(Status.UNREGISTERED)) {
+				unregistered.add(personId);
 			}
 		}
 	}
@@ -654,17 +659,17 @@ public class DBspinner {
 	}
 
 	private static String getLastUpdateRegistrationStatus(int eventId, int personId) throws Exception {
-		String status = Status.NOT_REGISTERED;
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetLastUpdateRegistrationStatus(eventId, personId, conn);
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				status = rs.getString("status");
+		try (Connection conn = DButils.getDBconnection()) {
+			String status = Status.NOT_REGISTERED;
+			PreparedStatement preparedStmt = prepareSatementGetLastUpdateRegistrationStatus(eventId, personId, conn);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					status = rs.getString("status");
+				}
 			}
+			return status;
 		}
-		conn.close();
-		return status;
 	}
 
 	private static PreparedStatement prepareSatementGetLastUpdateRegistrationStatus(int eventId, int personId, Connection conn) throws SQLException {
@@ -680,20 +685,19 @@ public class DBspinner {
 	}
 
 	private static List<Integer> getPersonIdRegistrations(int eventId) throws Exception {
-		ArrayList<Integer> persons = new ArrayList<Integer>();
+		try (Connection conn = DButils.getDBconnection()) {
+			ArrayList<Integer> persons = new ArrayList<Integer>();
+			PreparedStatement preparedStmt = prepareSatementGetPersonIdRegistrations(eventId, conn);
 
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetPersonIdRegistrations(eventId, conn);
-
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				int personId = rs.getInt("personId");
-				persons.add(personId);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					int personId = rs.getInt("personId");
+					persons.add(personId);
+				}
 			}
+			return persons;
 		}
-		conn.close();
-		return persons;
 	}
 
 	private static PreparedStatement prepareSatementGetPersonIdRegistrations(int eventId, Connection conn) throws SQLException {
@@ -708,20 +712,20 @@ public class DBspinner {
 	}
 
 	private static List<Integer> getEventIdRegistrations(int personId) throws Exception {
-		ArrayList<Integer> events = new ArrayList<Integer>();
+		try (Connection conn = DButils.getDBconnection()) {
+			ArrayList<Integer> events = new ArrayList<Integer>();
 
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetEventIdRegistrations(personId, conn);
+			PreparedStatement preparedStmt = prepareSatementGetEventIdRegistrations(personId, conn);
 
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				int eventId = rs.getInt("eventId");
-				events.add(eventId);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					int eventId = rs.getInt("eventId");
+					events.add(eventId);
+				}
 			}
+			return events;
 		}
-		conn.close();
-		return events;
 	}
 
 	private static PreparedStatement prepareSatementGetEventIdRegistrations(int personId, Connection conn) throws SQLException {
@@ -745,17 +749,17 @@ public class DBspinner {
 	}
 
 	public static Date getUnRegisterTime(int personId, int eventId) throws Exception {
-		Date lastUnRegisterTime = null;
-		Connection conn = DButils.getDBconnection();
-		PreparedStatement preparedStmt = prepareSatementGetUnRegisterTime(personId, eventId, conn);
-		if (preparedStmt.execute()) {
-			ResultSet rs = preparedStmt.getResultSet();
-			while (rs.next()) {
-				lastUnRegisterTime = rs.getTimestamp(1);
+		try (Connection conn = DButils.getDBconnection()) {
+			Date lastUnRegisterTime = null;
+			PreparedStatement preparedStmt = prepareSatementGetUnRegisterTime(personId, eventId, conn);
+			if (preparedStmt.execute()) {
+				ResultSet rs = preparedStmt.getResultSet();
+				while (rs.next()) {
+					lastUnRegisterTime = rs.getTimestamp(1);
+				}
 			}
+			return lastUnRegisterTime;
 		}
-		conn.close();
-		return lastUnRegisterTime;
 	}
 
 	private static PreparedStatement prepareSatementGetUnRegisterTime(int personId, int eventId, Connection conn) throws Exception {
