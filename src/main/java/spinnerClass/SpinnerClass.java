@@ -8,6 +8,7 @@ import java.util.Map;
 
 import spinnerCalendar.SpinnerCalendar;
 import spinnerCalendar.SpinnerEvent;
+import spinnerCalendar.Status;
 import spinnerCalendar.StudentSpinnerEvent;
 import charcters.CharcterType;
 import charcters.Person;
@@ -29,8 +30,8 @@ public class SpinnerClass {
 
 	public SpinnerClass(String className, String openForRegistrationMode, int lockForRegistration, String hyperLink) {
 		spinnerClassName = className;
-		this.openForRegistrationMode=openForRegistrationMode;
-		this.lockForRegistration=lockForRegistration;
+		this.openForRegistrationMode = openForRegistrationMode;
+		this.lockForRegistration = lockForRegistration;
 		this.hyperLink = hyperLink;
 	}
 
@@ -75,7 +76,7 @@ public class SpinnerClass {
 	public int getId() {
 		return classId;
 	}
-	
+
 	public String getOpenForRegistrationMode() {
 		return openForRegistrationMode;
 	}
@@ -83,7 +84,6 @@ public class SpinnerClass {
 	public int getLockForRegistration() {
 		return lockForRegistration;
 	}
-
 
 	public String getHyperLink() {
 		return hyperLink;
@@ -183,10 +183,10 @@ public class SpinnerClass {
 			admins.put(psc.getPerson().getId(), psc);
 		}
 	}
-	
+
 	protected void unAssignAdminFromClass(Person p) throws Exception {
 		PersonSpinnerClass psc = admins.get(p.getId());
-		if (psc != null) {			
+		if (psc != null) {
 			p.unAssignPersonFromClass(classId);
 			DBspinner.unAssignPersonFromClass(this, psc);
 			admins.remove(psc.getPerson().getId());
@@ -204,15 +204,20 @@ public class SpinnerClass {
 	}
 
 	protected SpinnerEvent deleteSpinnerEventFromClassCalendar(int eventId) throws Exception {
-		initClassCalendar();		
+		initClassCalendar();
 		return classCalendar.deleteSpinnerEventFromSpinnerCalendar(eventId);
 	}
 
 	protected StudentSpinnerEvent registerToSpinnerEvent(int eventId, int studentId) throws Exception {
+		StudentSpinnerEvent studentEvent = null;
 		SpinnerEvent se = getClassEvent(eventId);
 		PersonSpinnerClass s = getStudent(studentId);
-		String sts = se.registerToSpinnerEvent(s);
-		StudentSpinnerEvent studentEvent = new StudentSpinnerEvent(se, sts, s.getNumberOfValidRegistrations());
+		if (s.getNumberOfValidRegistrations() == 0) {
+			studentEvent = new StudentSpinnerEvent(se, Status.NO_VALID_CREDIT, s.getNumberOfValidRegistrations());
+		} else {
+			String sts = se.registerToSpinnerEvent(s);
+			studentEvent = new StudentSpinnerEvent(se, sts, s.getNumberOfValidRegistrations());
+		}
 		// TODO: do we need to return SpinnerEvent?
 		return studentEvent;
 	}
@@ -305,10 +310,5 @@ public class SpinnerClass {
 		return student;
 
 	}
-
-
-	
-
-
 
 }

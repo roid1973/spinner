@@ -2,9 +2,7 @@ package db.spinner;
 
 import java.sql.*;
 import java.util.Properties;
-
 import utils.PropertiesUtils;
-
 import com.google.appengine.api.utils.SystemProperty;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -24,10 +22,9 @@ public class DButils {
 			dbcp.setUrl(props.getProperty(prefix + "url"));
 			dbcp.setUsername(props.getProperty(prefix + "user"));
 			dbcp.setPassword(props.getProperty(prefix + "passwd"));
-			dbcp.setMinIdle(5);
-			dbcp.setMaxIdle(20);
-			dbcp.setMaxActive(30);
-
+			dbcp.setMinIdle(Integer.parseInt(props.getProperty(prefix + "minIdle")));
+			dbcp.setMaxIdle(Integer.parseInt(props.getProperty(prefix + "maxIdle")));
+			dbcp.setMaxActive(Integer.parseInt(props.getProperty(prefix + "maxActive")));
 			return dbcp;
 		} catch (Exception e) {
 			throw new RuntimeException("Cannot initialize dbcp", e);

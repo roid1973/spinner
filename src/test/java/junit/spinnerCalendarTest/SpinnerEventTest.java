@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
@@ -82,9 +83,14 @@ public class SpinnerEventTest {
 
 		SimpleDateFormat spinnerEventDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 		spinnerEventDateFormat.setTimeZone(TimeZone.getTimeZone("Israel"));
-
-		Date from1 = spinnerEventDateFormat.parse("22.11.2016 12:23:00");
-		Date to1 = spinnerEventDateFormat.parse("22.11.2016 13:00:00");
+		
+		Date now = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		int nextYear = cal.get(Calendar.YEAR)+1;
+		
+		Date from1 = spinnerEventDateFormat.parse("22.11."+nextYear+" 12:23:00");
+		Date to1 = spinnerEventDateFormat.parse("22.11."+nextYear+" 13:00:00");
 
 		Date from2 = spinnerEventDateFormat.parse("23.11.2016 12:00:00");
 		Date to2 = spinnerEventDateFormat.parse("23.11.2016 13:00:00");
@@ -120,7 +126,8 @@ public class SpinnerEventTest {
 		p2 = persons.addSPerson(pn, fn2, ln, add, e, null);
 		p3 = persons.addSPerson(pn, fn3, ln, add, e, DateUtils.stringToStudentBirthDate(bd_notvalid));
 
-		instructor = persons.addSPerson("(972)123456789", "instructor_first_name", "instructor_first_name", "instructor address", null, null);
+		instructor = persons.addSPerson("(972)123456789", "instructor_first_name", "instructor_first_name",
+				"instructor address", null, null);
 
 		System.out.println("assigning students to classes");
 		classes.assignStudentToClass(p1.getId(), sc1.getId(), 20);
@@ -133,16 +140,22 @@ public class SpinnerEventTest {
 		System.out.println("generating events");
 		// TODO - add instructor to DB
 
-		se1 = new SpinnerEvent(sc1.getId(), "NA", se1_name, from1, to1, (10 * 60), current, se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
-		se2 = new SpinnerEvent(sc1.getId(), "NA", se2_name, from2, to2, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se3 = new SpinnerEvent(sc1.getId(), "NA", se3_name, from3, to3, 0, current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se4 = new SpinnerEvent(sc1.getId(), "NA", se4_name, from4, to4, (10 * 60), current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se41 = new SpinnerEvent(sc1.getId(), "NA", se41_name, from4, to4, (10 * 60), current, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
-		se5 = new SpinnerEvent(sc1.getId(), "NA", se5_name, from5, to5, 0, openDate5, se_max_capacity, instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se1 = new SpinnerEvent(sc1.getId(), "NA", se1_name, from1, to1, (10 * 60), current, se_max_capacity,
+				instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		se2 = new SpinnerEvent(sc1.getId(), "NA", se2_name, from2, to2, 0, current, se_max_capacity, instructor.getId(),
+				se_address, comments, Status.EVENT_OPEN);
+		se3 = new SpinnerEvent(sc1.getId(), "NA", se3_name, from3, to3, 0, current, se_max_capacity, instructor.getId(),
+				se_address, comments, Status.EVENT_OPEN);
+		se4 = new SpinnerEvent(sc1.getId(), "NA", se4_name, from4, to4, (10 * 60), current, se_max_capacity,
+				instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se41 = new SpinnerEvent(sc1.getId(), "NA", se41_name, from4, to4, (10 * 60), current, se_max_capacity,
+				instructor.getId(), se_address, comments, Status.EVENT_OPEN);
+		se5 = new SpinnerEvent(sc1.getId(), "NA", se5_name, from5, to5, 0, openDate5, se_max_capacity,
+				instructor.getId(), se_address, comments, Status.EVENT_OPEN);
 
-		System.out.println(spinnerEventDateFormat.format(se4.getFromDate()));
-		System.out.println(spinnerEventDateFormat.format(se4.getToDate()));
-		System.out.println(spinnerEventDateFormat.format(se4.getLockDate()));
+		//System.out.println(spinnerEventDateFormat.format(se4.getFromDate()));
+		//System.out.println(spinnerEventDateFormat.format(se4.getToDate()));
+		//System.out.println(spinnerEventDateFormat.format(se4.getLockDate()));
 
 		System.out.println("adding events to DB");
 		se1 = classes.addSpinnerEventToSpinnerCalendar(sc1.getId(), se1);
@@ -217,22 +230,27 @@ public class SpinnerEventTest {
 	public void updateEventDetails() throws Exception {
 		System.out.println("updateEventDetails");
 		String eventNewName = "EVENT NEW_NAME";
-		SpinnerEvent se1_new = new SpinnerEvent(sc1.getId(), "NA", eventNewName, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		SpinnerEvent se1_new = new SpinnerEvent(sc1.getId(), "NA", eventNewName, se1.getFromDate(), se1.getToDate(),
+				(10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments,
+				Status.EVENT_OPEN);
 		se1 = classes.updateSpinnerEventInSpinnerCalendar(sc1.getId(), se1.getEventId(), se1_new);
 		assertTrue(se1.getName().equals(eventNewName));
-		SpinnerEvent se2_new = new SpinnerEvent(sc1.getId(), "NA", se1_name, se1.getFromDate(), se1.getToDate(), (10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments, Status.EVENT_OPEN);
+		SpinnerEvent se2_new = new SpinnerEvent(sc1.getId(), "NA", se1_name, se1.getFromDate(), se1.getToDate(),
+				(10 * 60), se1.getOpenDate(), se_max_capacity, instructorId_null, se_address, comments,
+				Status.EVENT_OPEN);
 		se1 = classes.updateSpinnerEventInSpinnerCalendar(sc1.getId(), se1.getEventId(), se2_new);
 	}
-	
+
 	@Test
 	public void deleteEvent() throws Exception {
 		System.out.println("deleteEvent");
-		StudentSpinnerEvent studentEvent = null;		
+		StudentSpinnerEvent studentEvent = null;
 		assertEquals(20, classes.getSpinnerClass(sc1.getId()).getStudent(p3.getId()).getNumberOfValidRegistrations());
-		studentEvent = classes.registerToSpinnerEvent(sc1.getId(), se41.getEventId(), p3.getId());		
+		studentEvent = classes.registerToSpinnerEvent(sc1.getId(), se41.getEventId(), p3.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.REGISTERED));
-		assertEquals(19, classes.getSpinnerClass(sc1.getId()).getStudent(p3.getId()).getNumberOfValidRegistrations());	
-		SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(sc1.getId(), se41.getEventId());		
+		assertEquals(19, classes.getSpinnerClass(sc1.getId()).getStudent(p3.getId()).getNumberOfValidRegistrations());
+		SpinnerClasses.getSpinnerClassesInstance().deleteSpinnerEventFromSpinnerCalendar(sc1.getId(),
+				se41.getEventId());
 		assertEquals(20, classes.getSpinnerClass(sc1.getId()).getStudent(p3.getId()).getNumberOfValidRegistrations());
 		se4 = classes.addSpinnerEventToSpinnerCalendar(sc1.getId(), se41);
 	}
@@ -241,7 +259,8 @@ public class SpinnerEventTest {
 	public void updatePersonDetails() throws Exception {
 		System.out.println("updatePersonDetails");
 		String newPhoneNumber = "(newPhoneNumber)";
-		Person newp1 = persons.updatePersonDetails(p1.getId(), newPhoneNumber, fn1, ln, add, e, DateUtils.stringToStudentBirthDate(bd));
+		Person newp1 = persons.updatePersonDetails(p1.getId(), newPhoneNumber, fn1, ln, add, e,
+				DateUtils.stringToStudentBirthDate(bd));
 		assertTrue(newp1.getPhoneNumber().equals(newPhoneNumber));
 		persons.updatePersonDetails(p1.getId(), pn, fn1, ln, add, e, DateUtils.stringToStudentBirthDate(bd));
 	}
@@ -278,18 +297,26 @@ public class SpinnerEventTest {
 		persons = classes.getEventRegisteredStudents(sc1.getId(), se4.getEventId());
 		assertTrue(persons.contains(p1));
 
+		TimeUnit.SECONDS.sleep(1);
+
 		studentEvent = classes.unRegisterFromSpinnerEvent(sc1.getId(), se4.getEventId(), p1.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.NOT_REGISTERED));
 		assertEquals(19, studentEvent.getCredit());
+		registered.clear();
+		standBy.clear();
 		classes.getStudentRegistrationEvents(sc1.getId(), p1.getId(), registered, standBy);
 		assertFalse(registered.contains(se4.getEventId()));
-	
+
+		TimeUnit.SECONDS.sleep(1);
+		
 		studentEvent = classes.registerToSpinnerEvent(sc1.getId(), se4.getEventId(), p1.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.REGISTERED));
 		assertEquals(19, studentEvent.getCredit());
 		classes.getStudentRegistrationEvents(sc1.getId(), p1.getId(), registered, standBy);
 		assertTrue(registered.contains(se4.getEventId()));
 
+		TimeUnit.SECONDS.sleep(1);
+		
 		studentEvent = classes.unRegisterFromSpinnerEvent(sc1.getId(), se4.getEventId(), p1.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.NOT_REGISTERED));
 		assertEquals(19, studentEvent.getCredit());
@@ -297,7 +324,7 @@ public class SpinnerEventTest {
 		assertFalse(registered.contains(se4.getEventId()));
 
 		classes.addCredit(p1.getId(), sc1.getId(), 1);
-		//assertEquals(20, studentEvent.getCredit());
+		// assertEquals(20, studentEvent.getCredit());
 		assertEquals(20, classes.getSpinnerClass(sc1.getId()).getStudent(p1.getId()).getNumberOfValidRegistrations());
 
 	}
@@ -320,8 +347,10 @@ public class SpinnerEventTest {
 
 	@Test
 	public void addExistingPerson() throws Exception {
-		Person ep1 = persons.addSPerson("1234567890", "existingPerson", "existingPerson_LN1", add, e, DateUtils.stringToStudentBirthDate(bd));
-		Person ep2 = persons.addSPerson("1234567890", "existingPerson", "existingPerson_LN2", add, e, DateUtils.stringToStudentBirthDate(bd));
+		Person ep1 = persons.addSPerson("1234567890", "existingPerson", "existingPerson_LN1", add, e,
+				DateUtils.stringToStudentBirthDate(bd));
+		Person ep2 = persons.addSPerson("1234567890", "existingPerson", "existingPerson_LN2", add, e,
+				DateUtils.stringToStudentBirthDate(bd));
 		assertTrue(ep1.getId() == ep2.getId());
 		persons.deletePerson(ep1.getId());
 	}
@@ -364,6 +393,8 @@ public class SpinnerEventTest {
 		classes.getStudentRegistrationEvents(sc1.getId(), p3.getId(), registered, standBy);
 		assertFalse(registered.contains(se1.getEventId()));
 		assertTrue(standBy.contains(se1.getEventId()));
+
+		TimeUnit.SECONDS.sleep(1);
 
 		studentEvent = classes.unRegisterFromSpinnerEvent(sc1.getId(), se1.getEventId(), p2.getId());
 		assertTrue((studentEvent.getStudentRegisterationStatus().getStatus()).equals(Status.NOT_REGISTERED));
@@ -498,7 +529,8 @@ public class SpinnerEventTest {
 		while (it.hasNext()) {
 			StudentSpinnerEvent sse = it.next();
 			SpinnerEvent se = sse.getSpinnerEvent();
-			if (se.getName().equals(se1_name) && se.getFromDate() == se1.getFromDate() && se.getToDate() == se1.getToDate() && se.getMaxCapacity() == se_max_capacity) {
+			if (se.getName().equals(se1_name) && se.getFromDate() == se1.getFromDate()
+					&& se.getToDate() == se1.getToDate() && se.getMaxCapacity() == se_max_capacity) {
 				se1_valid = true;
 			}
 		}

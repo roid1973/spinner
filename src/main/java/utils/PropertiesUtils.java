@@ -3,9 +3,6 @@ package utils;
 import java.io.*;
 import java.util.*;
 
-import spinnerCalendar.SpinnerCalendar;
-import spinnerCalendar.SpinnerEvent;
-
 public class PropertiesUtils {
 	private static final String PROPERTIES_FILE = "spinner.properties";
 	private static Properties prop = null;

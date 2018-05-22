@@ -1,23 +1,13 @@
 package spinner.notifications;
 
 import org.apache.commons.io.IOUtils;
-/*import org.json.JSONArray;
-import org.json.JSONObject;*/
-
-
-
 import org.codehaus.jackson.map.ObjectMapper;
-
 import com.google.appengine.repackaged.com.google.common.base.Charsets;
-
-import utils.PropertiesUtils;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public class GcmSender {
 	

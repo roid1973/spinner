@@ -1,11 +1,11 @@
-ALTER TABLE events DROP recurringId;
-ALTER TABLE events ADD COLUMN recurringId VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER eventId;
-
-ALTER TABLE class DROP openForRegistrationMode;
-ALTER TABLE class ADD COLUMN openForRegistrationMode VARCHAR(255) NOT NULL DEFAULT 'MONTHLY' AFTER className;
-
-ALTER TABLE class DROP lockForRegistration;
-ALTER TABLE class ADD COLUMN lockForRegistration INT DEFAULT 0 AFTER openForRegistrationMode;
+#ALTER TABLE events DROP recurringId;
+#ALTER TABLE events ADD COLUMN recurringId VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER eventId;
+#
+#ALTER TABLE class DROP openForRegistrationMode;
+#ALTER TABLE class ADD COLUMN openForRegistrationMode VARCHAR(255) NOT NULL DEFAULT 'MONTHLY' AFTER className;
+#
+#ALTER TABLE class DROP lockForRegistration;
+#ALTER TABLE class ADD COLUMN lockForRegistration INT DEFAULT 0 AFTER openForRegistrationMode;
 
 DROP DATABASE IF EXISTS spinnerDB2;
 CREATE DATABASE IF NOT EXISTS spinnerDB2;
@@ -193,7 +193,9 @@ INSERT INTO spinnerDB2.events (classId, eventName, fromDate, toDate, maxCapacity
 VALUES ((Select classId from spinnerDB2.class where className = 'Test Class'),'Spinning-Eve','2015-12-11 19:00:00','2015-12-11 21:00:00',19,(Select personId from spinnerDB2.person where firstName = 'Lauris'),'This Field is saved for Event comment');
 
 INSERT INTO spinnerDB2.events (classId, eventName, fromDate, toDate, maxCapacity, instructorId, comments)
-VALUES ((Select classId from spinnerDB2.class where className = 'Test Class'),'Spinning-Mrn1','2015-12-10 07:30:00','2015-12-10 08:30:00',1,(Select personId from spinnerDB2.person where firstName = 'Lauris'),'');
+VALUES ((Select classId from spinnerDB2.class where className = 'Test Class'),'Spinning-Mrn1','2015-02-06 07:30:00','2018-02-06 08:30:00',1,(Select personId from spinnerDB2.person where firstName = 'Lauris'),'');
+
+INSERT INTO spinnerDB2.events (classId, eventName, fromDate, toDate, openDate, maxCapacity, instructorId, comments) VALUES ((Select classId from spinnerDB2.class where className = 'Test Class'),'Spinning-Mrn1','2015-02-06 07:30:00','2018-02-06 08:30:00','2018-02-03 08:30:00',1,(Select personId from spinnerDB2.person where firstName = 'Lauris'),'');
 
 
 #INSERT INTO spinnerDB2.events (classId, eventName, fromDate, toDate, openDate, maxCapacity, instructorId, comments)
@@ -276,3 +278,8 @@ VALUES ((Select classId from spinnerDB2.class where className = 'TRX In & Out'),
 INSERT INTO spinnerDB2.registration (classId, eventId, personId, status)
 VALUES ((Select classId from spinnerDB2.class where className = 'TRX In & Out'),(Select eventId from spinnerDB2.events where fromDate = '2016-01-25 07:30:00'),(Select personId from spinnerDB2.person where firstName = 'Ben'),'STANDBY');
 SELECT * FROM spinnerDB2.registration;
+
+
+ALTER TABLE spinnerDB2.events ADD COLUMN recurringId VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER eventId;
+ALTER TABLE spinnerDB2.class ADD COLUMN openForRegistrationMode VARCHAR(255) NOT NULL DEFAULT 'MONTHLY' AFTER className;
+ALTER TABLE spinnerDB2.class ADD COLUMN lockForRegistration INT DEFAULT 0 AFTER openForRegistrationMode;
