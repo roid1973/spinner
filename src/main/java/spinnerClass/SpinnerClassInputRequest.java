@@ -4,8 +4,8 @@ public class SpinnerClassInputRequest {
 	private String className;
 	private String openForRegistrationMode;
 	private int lockForRegistration;
-	private String hyperLink;
-
+	private String hyperLink;	
+	
 	public String getClassName() {
 		return className;
 	}

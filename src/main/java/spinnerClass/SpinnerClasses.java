@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import spinnerCalendar.SpinnerCalendarServices;
 import spinnerCalendar.SpinnerEvent;
 import spinnerCalendar.Status;
 import spinnerCalendar.StudentSpinnerEvent;
@@ -16,6 +18,7 @@ import charcters.PersonInputRequest;
 import charcters.PersonSpinnerClass;
 import charcters.Persons;
 import charcters.Student;
+import datastore.spinner.ClassDatastore;
 import db.spinner.DBspinner;
 
 public class SpinnerClasses {
@@ -24,6 +27,7 @@ public class SpinnerClasses {
 
 	private SpinnerClasses() throws Exception {
 		// spinnerClasses = DBspinner.getSpinnerClassListFromDB();
+
 	}
 
 	public static SpinnerClasses getSpinnerClassesInstance() throws Exception {
@@ -37,23 +41,57 @@ public class SpinnerClasses {
 	}
 
 	private void InitSpinnerClasses() throws Exception {
+
+		ClassDatastore ds = new ClassDatastore();
+
+		// TODO: delete after datastore transformation complete
+		// *******************************************************************************
 		spinnerClasses = DBspinner.getSpinnerClassListFromDB();
+		Iterator<Entry<Integer, SpinnerClass>> it = spinnerClasses.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			int classId = (Integer) pair.getKey();
+			SpinnerClass sc = (SpinnerClass) pair.getValue();
+			ds.classTransformation(sc);
+		}
+		// *******************************************************************************
+		spinnerClasses = ds.getSpinnerClassListFromDatastore();
 	}
 
-	public SpinnerClass addSpinnerClass(String className, String openForRegistrationMode, int lockForRegistration, String hyperLink) throws Exception {
-		SpinnerClass sc = new SpinnerClass(className, openForRegistrationMode, lockForRegistration, hyperLink);
+	// public SpinnerClass addSpinnerClass(String className, String
+	// openForRegistrationMode, int lockForRegistration, String hyperLink)
+	// throws Exception {
+	// SpinnerClass sc = new SpinnerClass(className, openForRegistrationMode,
+	// lockForRegistration, hyperLink);
+	// int id = DBspinner.addClass(sc);
+	// sc.setId(id);
+	// spinnerClasses.put(sc.getId(), sc);
+	// return sc;
+	// }
+
+	public SpinnerClass addSpinnerClass(SpinnerClassInputRequest input) throws Exception {
+		ClassDatastore ds = new ClassDatastore();
+		SpinnerClass sc = ds.addClass(input);
+		// TODO: delete after datastore transformation complete
+		// *******************************************************************************
+		ds.deleteClass(sc.getId());
 		int id = DBspinner.addClass(sc);
 		sc.setId(id);
+		ds.classTransformation(sc);
+		// *******************************************************************************
 		spinnerClasses.put(sc.getId(), sc);
 		return sc;
 	}
 
-	public SpinnerClass getSpinnerClass(int classId) {
+	public SpinnerClass getSpinnerClass(int classId) throws Exception {
 		SpinnerClass sc = spinnerClasses.get(classId);
+		// ClassDatastore ds = new ClassDatastore();
+		// SpinnerClass sc = ds.getClass(classId);
 		return sc;
 	}
 
-	public Status deleteSpinnerClass(int classId) throws Exception {
+	// TODO: delete after datastore transformation complete
+	public Status deleteSpinnerClassFromDB(int classId) throws Exception {
 		Status sts = new Status(Status.CLASS_NOT_EXIST);
 		SpinnerClass spinnerClass = getSpinnerClass(classId);
 		if (spinnerClass != null) {
@@ -63,6 +101,17 @@ public class SpinnerClasses {
 			spinnerClasses.remove(classId);
 			sts.setStatus(Status.CLASS_DELETED);
 		}
+		return sts;
+	}
+
+	public Status deleteSpinnerClass(int classId) throws Exception {
+		ClassDatastore ds = new ClassDatastore();
+		Status sts = ds.deleteClass(classId);
+		// TODO: delete after datastore transformation complete
+		// *******************************************************************************
+		deleteSpinnerClassFromDB(classId);
+		// *******************************************************************************
+		spinnerClasses.remove(classId);
 		return sts;
 	}
 
@@ -82,7 +131,7 @@ public class SpinnerClasses {
 		if (from.before(now)) {
 			throw new Exception("cannot delete history event");
 		}
-		
+
 		SpinnerClass sc = getSpinnerClass(classId);
 		unRegisterAllFromSpinnerEvent(classId, eventId);
 		return sc.deleteSpinnerEventFromClassCalendar(eventId);
@@ -166,20 +215,20 @@ public class SpinnerClasses {
 	}
 
 	private void unRegisterAllFromSpinnerEvent(int classId, int eventId) throws Exception {
-		
+
 		Date now = new Date();
 		Date from = getSpinnerClass(classId).getClassEvent(eventId).getFromDate();
 		if (from.before(now)) {
 			throw new Exception("cannot unregister from history event");
 		}
-		
+
 		boolean updateCredit = true;
 		List<Person> unregister = getEventUnregisteredStudents(classId, eventId);
 		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, unregister, false);
 		List<Person> registered = getEventRegisteredStudents(classId, eventId);
 		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, registered, updateCredit);
 		List<Person> standBy = getEventStandbyStudents(classId, eventId);
-		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, standBy, false);		
+		unregisterListOfStudentsFromSpinnerEvent(classId, eventId, standBy, false);
 	}
 
 	private void unregisterListOfStudentsFromSpinnerEvent(int classId, int eventId, List<Person> students, boolean updateCredit) throws Exception {
@@ -309,9 +358,11 @@ public class SpinnerClasses {
 		return persons;
 	}
 
-	// public List<SpinnerEvent> getRecurringEvents(int classId, String recurringId) {
+	// public List<SpinnerEvent> getRecurringEvents(int classId, String
+	// recurringId) {
 	// SpinnerClass sc = getSpinnerClass(classId);
-	// List recurringEventsList = sc.getClassEvents().getSpinnerRecurringEvents(recurringId);
+	// List recurringEventsList =
+	// sc.getClassEvents().getSpinnerRecurringEvents(recurringId);
 	// return recurringEventsList;
 	// }
 

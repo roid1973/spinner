@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.cloud.datastore.Key;
+
 import spinnerCalendar.SpinnerCalendar;
 import spinnerCalendar.SpinnerEvent;
 import spinnerCalendar.Status;
@@ -30,9 +32,17 @@ public class SpinnerClass {
 
 	public SpinnerClass(String className, String openForRegistrationMode, int lockForRegistration, String hyperLink) {
 		spinnerClassName = className;
-		this.openForRegistrationMode = openForRegistrationMode;
+		if (openForRegistrationMode != null) {
+			this.openForRegistrationMode = openForRegistrationMode;
+		} else {
+			this.openForRegistrationMode = "";
+		}
 		this.lockForRegistration = lockForRegistration;
-		this.hyperLink = hyperLink;
+		if (hyperLink != null) {
+			this.hyperLink = hyperLink;
+		} else {
+			this.hyperLink = "";
+		}
 	}
 
 	public SpinnerClass(int classId) throws Exception {

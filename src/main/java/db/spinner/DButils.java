@@ -34,6 +34,8 @@ public class DButils {
 	public static Connection getDBconnection() throws Exception {
 		return dbcp.getConnection();
 	}
+	
+	
 
 	public static ResultSet sqlQuery(String statement) throws Exception {
 		return getDBconnection().createStatement().executeQuery(statement);

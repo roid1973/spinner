@@ -13,7 +13,6 @@ import db.spinner.DButils;
 
 public class DBTest {
 
-	@Test
 	public void testGetConnection() {
 		try {
 			assertNotNull(DButils.getDBconnection());
@@ -23,9 +22,10 @@ public class DBTest {
 				String eventName = rs.getString("eventName");
 
 				Date fromDate = rs.getTimestamp("fromDate");
-				//System.out.println(eventName);
+				// System.out.println(eventName);
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				//System.out.printf("from.date : %s%n", dateFormat.format(fromDate));
+				// System.out.printf("from.date : %s%n",
+				// dateFormat.format(fromDate));
 			}
 
 		} catch (Exception e) {
