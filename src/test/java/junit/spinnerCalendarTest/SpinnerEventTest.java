@@ -390,6 +390,45 @@ public class SpinnerEventTest {
 			assertTrue(openDate.compareTo(sdf.format(eventResult.getOpenDate())) == 0);
 		}
 	}
+	
+	@Test
+	public void recuringEventsTest() throws Exception {
+		System.out.println("recuringEventsTest");		
+		String eventName = "addRecEvent";
+		int classId = sc1.getId();
+		assertTrue("WEEKLY".compareTo(sc1.getOpenForRegistrationMode()) == 0);
+		String tmz = "Israel";
+		String fromDate = "15/10/2020 22:00";
+		String toDate = "15/10/2020 22:30";
+		SpinnerEventInputRequest event = new SpinnerEventInputRequest();
+		event.setEventName(eventName);
+		event.setTimeZone(tmz);
+		event.setFromDate(fromDate);
+		event.setToDate(toDate);
+		event.setMaxCapacity(23);
+		event.setInstructorId(instructor.getId());
+		event.setInterval("WEEKLY");
+		event.setNumberOfOccurrences(3);
+		List<SpinnerEventInputRequest> eventsListInput = new ArrayList<SpinnerEventInputRequest>();
+		eventsListInput.add(event);
+		SpinnerCalendarServices scs = new SpinnerCalendarServices();
+		List<SpinnerEvent> eventsListOutput = scs.addEvents(classId, eventsListInput);
+		assertTrue(eventsListOutput.size()==3);
+		
+		Iterator<SpinnerEvent> iterator = eventsListOutput.iterator();
+		SpinnerEvent eventResult = iterator.next();	
+		String recurringId = eventResult.getRecurringId();
+		assertTrue(recurringId.compareTo("NA")!=0);		
+		
+		assertTrue(eventResult.getMaxCapacity()==23);
+		event.setMaxCapacity(20);
+		eventsListOutput = scs.updateRecurringEvent(classId, recurringId, event);
+		Iterator<SpinnerEvent> updateIterator = eventsListOutput.iterator();
+		SpinnerEvent updateEventResult = updateIterator.next();	
+		assertTrue(updateEventResult.getMaxCapacity()==20);		
+		
+		scs.deleteRecurringEvent(classId, recurringId);		
+	}
 
 	@Test
 	public void registerToLockedEvent() throws Exception {
