@@ -108,27 +108,29 @@ public class DateUtils {
 		return durationDate;
 	}
 
-	public static Date calcOpenDate(String openForRegistrationMode, Date fromDate) throws Exception {
+	public static Date calcOpenDate(String openForRegistrationMode, Date fromDate, String TMZ) throws Exception {
 
-		Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance();		
 		c.setTime(fromDate);
-		Date openDate = new Date();
 
 		if (openForRegistrationMode.compareTo("MONTHLY") == 0) {
-			c.set(Calendar.MONTH, -1);
-			c.set(Calendar.DATE, c.getActualMaximum(Calendar.DATE));
+			c.setTimeZone(TimeZone.getTimeZone(TMZ));
+			c.add(Calendar.MONTH, -1);
+			c.set(Calendar.DATE, c.getActualMaximum(Calendar.DAY_OF_MONTH));			
 			c.set(Calendar.HOUR_OF_DAY, 8);
-			openDate = c.getTime();
+			c.set(Calendar.MINUTE,0);
+			c.set(Calendar.SECOND,0);	
 		}
-
+		
 		if (openForRegistrationMode.compareTo("WEEKLY") == 0) {
-			c.add(Calendar.DAY_OF_MONTH, -7);
+			c.setTimeZone(TimeZone.getTimeZone(TMZ));
+			c.add(Calendar.DAY_OF_MONTH, -7);			
 			c.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
 			c.set(Calendar.HOUR_OF_DAY, 17);
-			openDate = c.getTime();
+			c.set(Calendar.MINUTE,0);
+			c.set(Calendar.SECOND,0);			
 		}
-
-		return openDate;
+		return c.getTime();
 	}
 
 }

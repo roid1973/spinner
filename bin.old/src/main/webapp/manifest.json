@@ -1,0 +1,8 @@
+{
+  "short_name": "Spinner",
+  "name": "Spinner Calendar Application",
+  
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "orientation": "landscape"
+}

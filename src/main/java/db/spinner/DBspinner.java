@@ -625,7 +625,7 @@ public class DBspinner {
 		preparedStmt.setInt(3, eventId);
 	}
 
-	public static void initEventRegistrations(int eventId, List<Integer> registered, List<Integer> standBy, List<Integer> unregistered) throws Exception {
+	public static void initEventRegistrations(int eventId, List<Integer> registered, List<Integer> standBy, List<Integer> unregistered) throws Exception {		
 		List<Integer> allRegisterationsPersonIds = getPersonIdRegistrations(eventId);
 		Iterator<Integer> allRegisterationsPersonIdsIterator = allRegisterationsPersonIds.iterator();
 		while (allRegisterationsPersonIdsIterator.hasNext()) {

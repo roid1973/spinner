@@ -11,7 +11,7 @@
 
 	<properties>
 		<appengine.app.version>1</appengine.app.version>
-		<appengine.target.version>1.9.48</appengine.target.version>
+		<appengine.target.version>1.9.64</appengine.target.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jersey.version>1.9.1</jersey.version>
 	</properties>
@@ -25,7 +25,12 @@
 			<version>${appengine.target.version}</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-datastore</artifactId>
+			<version>1.32.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

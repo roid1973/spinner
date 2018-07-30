@@ -1,0 +1,69 @@
+mvn clean install
+
+//load application in to google cloud
+appcfg.cmd -A spinner-1026 update target\spinner-1.0
+
+//call Spinner @GET REST /getSpinnerCalendarEvents/{fromDate}/{toDate}
+http://spinner-1026.appspot.com/rest/SpinnerServices/getSpinnerCalendarEvents?fromDate=123&toDate=345
+
+//call Spinner @GET REST /getStudentSpinnerCalendarEvents/{studentId}
+http://spinner-1026.appspot.com/rest/SpinnerServices/getStudentSpinnerCalendarEvents/0507730705_Yam
+
+//call Spinner @POST REST /addSpinnerEventToSpinnerCalendar/{se_name}/{fromDate}/{toDate}/{maxCapacity}
+http://spinner-1026.appspot.com/rest/SpinnerServices/addSpinnerEventToSpinnerCalendar/Spining/02.11.2015 23:00/02.11.2015 23:30/25
+
+//call Spinner @POST REST /registerToSpinnerEvent/{se_id}/{s_id}
+http://spinner-1026.appspot.com/rest/SpinnerServices/registerToSpinnerEvent/testEvent2_1450869300000/0507730705_Roi
+
+//call Spinner @POST REST /unRegisterFromSpinnerEvent/{se_id}/{s_id}
+http://spinner-1026.appspot.com/rest/SpinnerServices/unRegisterFromSpinnerEvent/testEvent1_1450782900000/0507730705_Roi
+
+//call Spinner @POST REST /assignStudentToClass/{className}/{studentId}
+http://spinner-1026.appspot.com/rest/SpinnerServices/assignStudentToClass/Spinning KY/0507730705_Roi
+
+//call Spinner @POST REST unAssignStudentFromClass/{className}/{studentId}
+http://spinner-1026.appspot.com/rest/SpinnerServices/unAssignStudentFromClass/Spinning KY/0507730705_Roi
+
+
+
+//URL to Spinner project
+https://console.developers.google.com/project/spinner-1026/start/appengine
+
+//create pom for web application
+mvn archetype:generate -DgroupId=spinnerCalendar -DartifactId=RestExample -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+//how to find class in Jar - cd to directory and excute below command
+for /R %G in (*.jar) do @jar -tvf %G | find "ClassName" > NUL && echo %G
+for /R %G in (*.jar) do @jar -tvf %G | find "UriBuilder" > NUL && echo %G
+
+//spinnertest topic for notification
+projects/spinner-1026/topics/spinnertest
+
+//OAuth Client
+//Here is your client ID
+1015662058866-6n9gi3d5ijv2oloqn51909lo7hit05og.apps.googleusercontent.com
+//Here is your client secret
+m78moM3CELy1CgrDXGvmMNwX
+
+//google cloud mySQL DB
+mysql --host=173.194.110.54 --user=spinner --password=dayan151 spinnerDB
+mysql --host=173.194.110.54 --user=spinner --password=dayan151 spinnerDB < db_spinner.sql
+mysql --host=173.194.110.54 --user=spinner --password=dayan151 < db_spinner.sql
+
+
+//Server API Key
+AIzaSyBvGXuTQGTLFIUfFFvLpD46-6kn-P9vUxU
+
+//Sender ID
+1015662058866
+
+Server API Key help
+AIzaSyBvGXuTQGTLFIUfFFvLpD46-6kn-P9vUxU
+Sender ID help
+1015662058866
+
+		<dependency>
+			<groupId>com.mchange</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.5.1</version>
+		</dependency>

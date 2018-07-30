@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/rest/SpinnerServices/getThisWeekStudentsDetailsClass/3</url>
+    <description>getThisWeekStudentsDetailsClass</description>
+    <schedule>every day 19:00</schedule>
+  </cron> 
+</cronentries>
